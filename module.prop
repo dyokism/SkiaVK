@@ -1,0 +1,9 @@
+id=skia_vulkan
+name=SkiaVK
+version=2.0
+versionCode=100
+author=dyokism
+description=force skia vulkan (skiavk) renderer with automatic bootloop protection.
+minMagisk=20400
+minApi=29
+updateJson=https://raw.githubusercontent.com/dyokism/SkiaVK/main/update.json
