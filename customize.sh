@@ -22,11 +22,11 @@ done
 
 if [ "$HAS_VULKAN_FEATURE" -eq 0 ] && [ "$HAS_VULKAN_LIB" -eq 0 ]; then
     ui_print " "
-    ui_print "[!] Warning:"
+    ui_print "[!] Error:"
     ui_print "  Vulkan hardware driver was not detected on your device."
-    ui_print "  Installation will proceed, but the bootloop guard"
-    ui_print "  will automatically bypass rendering to keep you safe."
+    ui_print "  Aborting installation to keep your device safe."
     ui_print " "
+    abort "  Vulkan is not supported by this device!"
 else
     ui_print "- Vulkan hardware driver detected."
 fi
