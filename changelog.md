@@ -4,7 +4,7 @@
 - **Boot Timeout Margin**: Increased boot completion wait timeout from 300s to 480s to prevent false-positives on slower devices.
 - **Robust Guarding**: Prevented late-boot `service.sh` from writing state resets if the module has already been disabled by the bootloop guard.
 - **Expanded Compatibility**: Added support for non-standard layout Vulkan HAL drivers (Mali-specific and system-level fallback paths).
-- **Persistent Logging**: Implemented local storage boot log (`/data/adb/skia_vulkan/skia_vulkan.log`) with automatic rotation for reliable debugging.
+- **Persistent Logging**: Implemented local storage boot log (`/data/adb/skia_vulkan/skia_vulkan.log`) refreshed per boot cycle for reliable debugging.
 
 ## v1.1
 - **Fix Update Button**: Added changelog support for Magisk updater.

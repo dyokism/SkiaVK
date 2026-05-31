@@ -77,7 +77,15 @@ flowchart TD
 
 ---
 
+## FAQ
+
+#### Why `resetprop` instead of `system.prop`?
+`system.prop` is loaded too early in the boot process and cannot be bypassed or controlled by the bootloop guard. Using `resetprop` dynamically allows the module to skip property injection entirely if a bootloop is detected, ensuring a safe fallback.
+
+---
+
 ## Developer & License
 
 - **Developer**: [dyokism](https://github.com/dyokism)
 - **License**: MIT
+

@@ -32,6 +32,9 @@ TIMEOUT=480
 ELAPSED=0
 until [ "$(getprop sys.boot_completed)" = "1" ]; do
     if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
+        echo "$(date): [WARNING] boot completion timeout reached (${TIMEOUT}s)." >> "$LOG_FILE"
+        echo "skia_vulkan: boot completion timeout reached." >> /dev/kmsg
+        update_description "status: timeout waiting for boot completion"
         exit 0
     fi
     sleep 2

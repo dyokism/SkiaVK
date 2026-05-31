@@ -77,7 +77,15 @@ flowchart TD
 
 ---
 
+## Sering ditanya
+
+#### Kenapa menggunakan `resetprop` dan bukan `system.prop`?
+`system.prop` dimuat terlalu awal pada proses booting dan tidak bisa dilewati atau dikontrol oleh proteksi bootloop. Dengan menggunakan `resetprop` secara dinamis, modul dapat melewati injeksi properti sepenuhnya jika bootloop terdeteksi, memastikan pemulihan yang aman.
+
+---
+
 ## Pengembang & Lisensi
 
 - **Pengembang**: [dyokism](https://github.com/dyokism)
 - **Lisensi**: MIT
+
