@@ -6,7 +6,7 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Version](https://img.shields.io/badge/Version-1.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.2-orange.svg)
 ![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
 
 ## Overview
@@ -17,11 +17,9 @@ SkiaVK changes the default HWUI renderer from OpenGL to Vulkan. This provides sm
 
 ## Why Use SkiaVK?
 
-- **Faster UI & Smooth Animations**: Offloads UI rendering to Vulkan for a buttery-smooth experience.
-- **Smart Bootloop Protection**: If your device fails to boot 3 times, the module automatically disables itself.
-- **Manual Reset for KernelSU/APatch**: Easily reset the bootloop counter and re-enable the module with a single tap via the manager's **Action** button.
-- **Dual Hardware Check**: Scans device feature lists and driver files before applying changes to prevent bootloops on unsupported devices.
-- **Late-Boot Persistence**: Ensures the renderer stays set to Vulkan even if overridden by other system services.
+- **Butter-Smooth UI & Animations**: Offloads UI rendering to Vulkan for reduced latency and better GPU efficiency.
+- **Built-in Bootloop Guard**: Automatically disables the module after 3 failed boot attempts to keep your device completely safe.
+- **One-Tap Counter Reset**: Easily re-enable the module and reset the safety counter with the KernelSU/APatch manager **Action** button.
 
 ---
 
@@ -32,6 +30,15 @@ SkiaVK changes the default HWUI renderer from OpenGL to Vulkan. This provides sm
 | Android | 10.0+ (API 29+) |
 | Hardware | Device with Vulkan driver and hardware support |
 | Root | Magisk, KernelSU, or APatch |
+
+---
+
+## Advanced Technical Features
+
+- **Automated Bootloop Guard (3-Strike System)**: Auto-disables the module after 3 consecutive failed boots and reports status dynamically in your root manager.
+- **Persistent Local Logging**: Records all boot milestones and error states at `/data/adb/skia_vulkan/skia_vulkan.log` for quick, offline debugging.
+- **Smart Late-Boot Re-Apply**: Actively monitors and enforces the SkiaVK renderer even if aggressive vendor services (e.g. Samsung HWUI overrides) try to reset it.
+- **Multi-Path HAL Detection**: Scans standard vendor libraries, system directories, and custom ARM Mali BSP locations for maximum compatibility.
 
 ---
 

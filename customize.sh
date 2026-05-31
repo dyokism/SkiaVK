@@ -13,7 +13,13 @@ if pm list features 2>/dev/null | grep -q android.hardware.vulkan; then
 fi
 
 # search for vendor vulkan hal driver (.so files)
-for libpath in /vendor/lib64/hw/vulkan.*.so /vendor/lib/hw/vulkan.*.so; do
+for libpath in \
+    /vendor/lib64/hw/vulkan.*.so \
+    /vendor/lib/hw/vulkan.*.so \
+    /vendor/lib64/egl/libGLES_mali.so \
+    /vendor/lib/egl/libGLES_mali.so \
+    /system/lib64/hw/vulkan.*.so \
+    /system/lib/hw/vulkan.*.so; do
     if [ -f "$libpath" ]; then
         HAS_VULKAN_LIB=1
         break

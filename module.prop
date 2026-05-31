@@ -1,7 +1,7 @@
 id=skia_vulkan
 name=SkiaVK
-version=1.1
-versionCode=110
+version=1.2
+versionCode=120
 author=dyokism
 description=force skia vulkan (skiavk) renderer with automatic bootloop protection.
 minMagisk=20400

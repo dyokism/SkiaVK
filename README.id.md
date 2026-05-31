@@ -6,7 +6,7 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Version](https://img.shields.io/badge/Version-1.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.2-orange.svg)
 ![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
 
 ## Deskripsi Umum
@@ -17,11 +17,9 @@ SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan an
 
 ## Mengapa Menggunakan SkiaVK?
 
-- **UI Lebih Lancar & Animasi Halus**: Mengalihkan rendering antarmuka ke Vulkan untuk performa yang lebih responsif.
-- **Proteksi Bootloop Otomatis**: Jika perangkat gagal booting 3 kali berturut-turut, modul akan otomatis nonaktif secara aman.
-- **Reset Manual untuk KernelSU/APatch**: Me-reset penghitung bootloop dan mengaktifkan kembali modul dengan sekali ketuk lewat tombol **Action** di manager.
-- **Pemeriksaan Driver Ganda**: Memastikan perangkat mendukung Vulkan sebelum menerapkan perubahan guna menghindari kegagalan booting.
-- **Konsistensi Rendering**: Memastikan konfigurasi tetap aktif meskipun ada layanan sistem lain yang mencoba mengubahnya kembali.
+- **Animasi Antarmuka Super Halus**: Mengalihkan rendering UI ke Vulkan untuk mengurangi latensi dan meningkatkan efisiensi daya GPU.
+- **Proteksi Bootloop Otomatis**: Menonaktifkan modul secara otomatis jika perangkat gagal booting 3 kali berturut-turut agar perangkat Anda tetap aman.
+- **Reset Instan Sekali Ketuk**: Mengaktifkan kembali modul dan menyetel ulang penghitung bootloop dengan mudah lewat tombol **Action** di manajer KernelSU/APatch.
 
 ---
 
@@ -32,6 +30,15 @@ SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan an
 | Android | 10.0+ (API 29+) |
 | Perangkat Keras | Perangkat dengan driver Vulkan yang mendukung akselerasi GPU |
 | Root | Magisk, KernelSU, atau APatch |
+
+---
+
+## Fitur Teknis Utama & Keamanan
+
+- **Proteksi Bootloop Otomatis (Sistem 3-Percobaan)**: Menonaktifkan modul secara mandiri setelah 3 kali gagal booting berturut-turut dan melaporkan statusnya secara dinamis di manajer root Anda.
+- **Log Persisten Lokal**: Mencatat seluruh tahapan booting dan status kesalahan secara lokal di `/data/adb/skia_vulkan/skia_vulkan.log` untuk kebutuhan analisis luring (*offline debugging*).
+- **Late-Boot Persistence**: Memantau dan menerapkan ulang konfigurasi secara aktif jika layanan vendor agresif (seperti override bawaan HWUI Samsung) mencoba mereset renderer setelah booting.
+- **Pemeriksaan Multi-Jalur HAL**: Memindai direktori vendor standar, direktori sistem, dan lokasi ARM Mali BSP kustom untuk memastikan kompatibilitas maksimal.
 
 ---
 

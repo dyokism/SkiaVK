@@ -18,8 +18,14 @@ update_description() {
     fi
 }
 
+LOG_FILE="$PERSISTENT/skia_vulkan.log"
+
 mkdir -p "$PERSISTENT" 2>/dev/null
 chmod 700 "$PERSISTENT" 2>/dev/null
+
+# initialize persistent log file (overwrite per boot)
+echo "=== SkiaVK Boot Log ===" > "$LOG_FILE"
+echo "$(date): [INFO] early boot: post-fs-data.sh started." >> "$LOG_FILE"
 
 # load state
 BOOT_COUNTER=0
@@ -50,10 +56,12 @@ COMPLETED_FLAG=0
 # save current state
 echo "BOOT_COUNTER=$BOOT_COUNTER" > "$STATE_FILE"
 echo "COMPLETED_FLAG=$COMPLETED_FLAG" >> "$STATE_FILE"
+echo "$(date): [INFO] boot counter: ${BOOT_COUNTER}/3" >> "$LOG_FILE"
 
 # safe bootloop check (limit 3 failed boots)
 if [ "$BOOT_COUNTER" -ge 3 ]; then
     echo "skia_vulkan: bootloop detected, disabling module." >> /dev/kmsg
+    echo "$(date): [ERROR] Bootloop detected! Disabling module." >> "$LOG_FILE"
     
     # disable module
     touch "$MODDIR/disable"
@@ -64,14 +72,17 @@ if [ "$BOOT_COUNTER" -ge 3 ]; then
 fi
 
 # apply early property injection
+echo "$(date): [INFO] applying debug.hwui.renderer=skiavk via resetprop" >> "$LOG_FILE"
 resetprop debug.hwui.renderer skiavk
 
 # verify if resetprop succeeded
 VERIFIED_RENDERER=$(getprop debug.hwui.renderer 2>/dev/null | tr -d '\r')
 if [ "$VERIFIED_RENDERER" = "skiavk" ]; then
     echo "skia_vulkan: successfully applied skiavk." >> /dev/kmsg
+    echo "$(date): [SUCCESS] successfully applied skiavk (early boot)" >> "$LOG_FILE"
     update_description "status: active (skiavk) | bootloop guard: armed (${BOOT_COUNTER}/3)"
 else
     echo "skia_vulkan: failed to apply skiavk." >> /dev/kmsg
+    echo "$(date): [ERROR] failed to apply skiavk (early boot)" >> "$LOG_FILE"
     update_description "failed to apply skiavk renderer."
 fi

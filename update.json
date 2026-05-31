@@ -1,6 +1,6 @@
 {
-  "version": "1.1",
-  "versionCode": 110,
-  "zipUrl": "https://github.com/dyokism/SkiaVK/releases/download/1.1/SkiaVulkan.zip",
+  "version": "1.2",
+  "versionCode": 120,
+  "zipUrl": "https://github.com/dyokism/SkiaVK/releases/download/1.2/SkiaVulkan.zip",
   "changelog": "https://raw.githubusercontent.com/dyokism/SkiaVK/main/changelog.md"
 }
