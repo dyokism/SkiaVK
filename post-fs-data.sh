@@ -63,29 +63,6 @@ if [ "$BOOT_COUNTER" -ge 3 ]; then
     exit 0
 fi
 
-# check vendor vulkan hal drivers
-HAS_VULKAN_HAL=0
-
-# 1. check getprop
-VAL_PROP=$(getprop ro.hardware.vulkan 2>/dev/null | tr -d '\r')
-if [ -n "$VAL_PROP" ]; then
-    HAS_VULKAN_HAL=1
-fi
-
-# 2. check vendor libraries
-for libpath in /vendor/lib64/hw/vulkan.*.so /vendor/lib/hw/vulkan.*.so; do
-    if [ -f "$libpath" ]; then
-        HAS_VULKAN_HAL=1
-        break
-    fi
-done
-
-if [ "$HAS_VULKAN_HAL" -eq 0 ]; then
-    echo "skia_vulkan: vulkan hal driver not found, bypass." >> /dev/kmsg
-    update_description "vulkan not supported by device, bypassed."
-    exit 0
-fi
-
 # apply early property injection
 resetprop debug.hwui.renderer skiavk
 

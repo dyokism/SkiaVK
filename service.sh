@@ -52,6 +52,12 @@ if [ -d "$PERSISTENT" ]; then
     echo "COMPLETED_FLAG=1" >> "$STATE_FILE"
 fi
 
-# update description to success
-update_description "status: active (skiavk) | boot: ok"
-echo "skia_vulkan: boot successful, bootloop guard disarmed." >> /dev/kmsg
+# verify final state of renderer
+FINAL_RENDERER=$(getprop debug.hwui.renderer 2>/dev/null | tr -d '\r')
+if [ "$FINAL_RENDERER" = "skiavk" ]; then
+    update_description "status: active (skiavk) | boot: ok"
+    echo "skia_vulkan: boot successful, bootloop guard disarmed." >> /dev/kmsg
+else
+    update_description "status: failed to apply skiavk | boot: ok"
+    echo "skia_vulkan: boot successful, but failed to enforce skiavk renderer." >> /dev/kmsg
+fi

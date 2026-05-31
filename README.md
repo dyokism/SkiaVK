@@ -6,7 +6,7 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Version](https://img.shields.io/badge/Version-1.0-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.1-orange.svg)
 ![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
 
 ## Overview
@@ -49,10 +49,7 @@ flowchart TD
     LoadState --> BootCheck{Failed Boots >= 3?}
     
     BootCheck -- Yes --> TriggerSafety[Disable Module & Safe Bypass]
-    BootCheck -- No --> CheckDrivers{Vulkan Hardware Drivers Found?}
-    
-    CheckDrivers -- No --> ExitBypass[Log Bypass & Keep Default Renderer]
-    CheckDrivers -- Yes --> ApplySkia[Set debug.hwui.renderer = skiavk]
+    BootCheck -- No --> ApplySkia[Set debug.hwui.renderer = skiavk]
     
     ApplySkia --> WaitBoot[Wait for System Boot Completion]
     WaitBoot --> BootSuccess[Boot Completed Successfully]
@@ -66,8 +63,8 @@ flowchart TD
     classDef process fill:#1e293b,stroke:#475569,stroke-width:1px,color:#f1f5f9;
     
     class FlashZip,Finished startEnd;
-    class TriggerSafety,ExitBypass,Abort fail;
-    class CheckVulkan,BootCheck,CheckDrivers decision;
+    class TriggerSafety,Abort fail;
+    class CheckVulkan,BootCheck decision;
     class Install,BootStart,LoadState,ApplySkia,WaitBoot,BootSuccess,ResetState process;
 ```
 

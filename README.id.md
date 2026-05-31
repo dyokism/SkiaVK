@@ -6,7 +6,7 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Version](https://img.shields.io/badge/Version-1.0-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.1-orange.svg)
 ![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
 
 ## Deskripsi Umum
@@ -49,10 +49,7 @@ flowchart TD
     LoadState --> BootCheck{Gagal Booting >= 3?}
     
     BootCheck -- Ya --> TriggerSafety[Nonaktifkan Modul & Bypass Aman]
-    BootCheck -- Tidak --> CheckDrivers{Driver Vulkan Terdeteksi?}
-    
-    CheckDrivers -- Tidak --> ExitBypass[Log Bypass & Gunakan Renderer Bawaan]
-    CheckDrivers -- Yes --> ApplySkia[Set debug.hwui.renderer = skiavk]
+    BootCheck -- Tidak --> ApplySkia[Set debug.hwui.renderer = skiavk]
     
     ApplySkia --> WaitBoot[Tunggu Sistem Selesai Memuat]
     WaitBoot --> BootSuccess[Booting Selesai dengan Sukses]
@@ -66,8 +63,8 @@ flowchart TD
     classDef process fill:#1e293b,stroke:#475569,stroke-width:1px,color:#f1f5f9;
     
     class FlashZip,Finished startEnd;
-    class TriggerSafety,ExitBypass,Abort fail;
-    class CheckVulkan,BootCheck,CheckDrivers decision;
+    class TriggerSafety,Abort fail;
+    class CheckVulkan,BootCheck decision;
     class Install,BootStart,LoadState,ApplySkia,WaitBoot,BootSuccess,ResetState process;
 ```
 
