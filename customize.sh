@@ -8,18 +8,33 @@ ui_print "- Installing SkiaVK..."
 HAS_VULKAN_FEATURE=0
 HAS_VULKAN_LIB=0
 
-if pm list features 2>/dev/null | grep -q android.hardware.vulkan; then
+# 1. check pm if available (normal system boot)
+if command -v pm >/dev/null 2>&1; then
+    if pm list features 2>/dev/null | grep -q android.hardware.vulkan; then
+        HAS_VULKAN_FEATURE=1
+    fi
+fi
+
+# 2. check system property (works in system and some recovery environments)
+VULKAN_PROP=$(getprop ro.hardware.vulkan 2>/dev/null | tr -d '\r')
+if [ -n "$VULKAN_PROP" ]; then
     HAS_VULKAN_FEATURE=1
 fi
 
-# search for vendor vulkan hal driver (.so files)
+# 3. search for vendor/system vulkan hal driver (.so files) - expanded paths
 for libpath in \
     /vendor/lib64/hw/vulkan.*.so \
     /vendor/lib/hw/vulkan.*.so \
     /vendor/lib64/egl/libGLES_mali.so \
     /vendor/lib/egl/libGLES_mali.so \
+    /vendor/lib64/vulkan.*.so \
+    /vendor/lib/vulkan.*.so \
+    /vendor/lib64/libvulkan_*.so \
+    /vendor/lib/libvulkan_*.so \
     /system/lib64/hw/vulkan.*.so \
-    /system/lib/hw/vulkan.*.so; do
+    /system/lib/hw/vulkan.*.so \
+    /system/lib64/libvulkan.so \
+    /system/lib/libvulkan.so; do
     if [ -f "$libpath" ]; then
         HAS_VULKAN_LIB=1
         break

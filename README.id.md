@@ -2,24 +2,24 @@
 
 # SkiaVK
 
-**Memaksa rendering Skia Vulkan di Android dengan perlindungan bootloop otomatis.**
+**Memaksa rendering Skia Vulkan di Android dengan perlindungan bootloop otomatis berbasis atomic.**
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Version](https://img.shields.io/badge/Version-1.2-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.3-orange.svg)
 ![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
 
 ## Deskripsi Umum
 
-SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan animasi antarmuka yang lebih lancar, rendah latensi, dan performa GPU yang lebih optimal pada perangkat yang kompatibel.
+SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan animasi antarmuka yang lebih lancar, rendah latensi, dan optimalisasi penggunaan akselerasi hardware GPU pada perangkat yang kompatibel.
 
 ---
 
-## Mengapa Menggunakan SkiaVK?
+## Mengapa Memilih SkiaVK?
 
-- **Animasi Antarmuka Super Halus**: Mengalihkan rendering UI ke Vulkan untuk mengurangi latensi dan meningkatkan efisiensi daya GPU.
-- **Proteksi Bootloop Otomatis**: Menonaktifkan modul secara otomatis jika perangkat gagal booting 3 kali berturut-turut agar perangkat Anda tetap aman.
-- **Reset Instan Sekali Ketuk**: Mengaktifkan kembali modul dan menyetel ulang penghitung bootloop dengan mudah lewat tombol **Action** di manajer KernelSU/APatch.
+- **UI Jauh Lebih Mulus**: Memaksa penggunaan Vulkan untuk animasi yang lebih cepat dan mengurangi lag pada GPU.
+- **Proteksi Bootloop Aman**: Mematikan modul secara otomatis jika gagal booting 3 kali berturut-turut dengan sistem tulis berkas yang aman (atomic).
+- **Pemulihan Sekali Ketuk**: Aktifkan kembali modul dan reset penghitung bootloop cukup dengan menekan tombol **Action** di manajer KernelSU/APatch.
 
 ---
 
@@ -33,12 +33,32 @@ SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan an
 
 ---
 
-## Fitur Teknis Utama & Keamanan
+## Instalasi & Konfigurasi
 
-- **Proteksi Bootloop Otomatis (Sistem 3-Percobaan)**: Menonaktifkan modul secara mandiri setelah 3 kali gagal booting berturut-turut dan melaporkan statusnya secara dinamis di manajer root Anda.
-- **Log Persisten Lokal**: Mencatat seluruh tahapan booting dan status kesalahan secara lokal di `/data/adb/skia_vulkan/skia_vulkan.log` untuk kebutuhan analisis luring (*offline debugging*).
-- **Late-Boot Persistence**: Memantau dan menerapkan ulang konfigurasi secara aktif jika layanan vendor agresif (seperti override bawaan HWUI Samsung) mencoba mereset renderer setelah booting.
-- **Pemeriksaan Multi-Jalur HAL**: Memindai direktori vendor standar, direktori sistem, dan lokasi ARM Mali BSP kustom untuk memastikan kompatibilitas maksimal.
+1. Pasang berkas ZIP melalui tab **Modules** di manager root Anda.
+2. **Reboot** (Mulai ulang) perangkat Anda untuk mengaktifkan.
+3. Periksa berkas log di: `/data/adb/skia_vulkan/skia_vulkan.log`
+
+---
+
+## Struktur Berkas
+
+```text
+SkiaVK/
+├── META-INF/
+│   └── com/
+│       └── google/
+│           └── android/
+│               ├── update-binary
+│               └── updater-script
+├── action.sh        # mengatur ulang penghitung bootloop (KSU/APatch Action)
+├── customize.sh     # pemeriksaan kompatibilitas & Vulkan driver saat instalasi
+├── module.prop      # metadata modul
+├── post-fs-data.sh  # injeksi properti awal booting & proteksi bootloop
+├── service.sh       # late-boot watchdog & pengembalian renderer jika diubah vendor
+├── uninstall.sh     # menghapus berkas sisa saat modul dihapus
+└── util.sh          # fungsi utilitas dan variabel bersama
+```
 
 ---
 
@@ -77,15 +97,7 @@ flowchart TD
 
 ---
 
-## Sering ditanya
-
-#### Kenapa menggunakan `resetprop` dan bukan `system.prop`?
-`system.prop` dimuat terlalu awal pada proses booting dan tidak bisa dilewati atau dikontrol oleh proteksi bootloop. Dengan menggunakan `resetprop` secara dinamis, modul dapat melewati injeksi properti sepenuhnya jika bootloop terdeteksi, memastikan pemulihan yang aman.
-
----
-
 ## Pengembang & Lisensi
 
 - **Pengembang**: [dyokism](https://github.com/dyokism)
 - **Lisensi**: MIT
-

@@ -1,5 +1,10 @@
 # SkiaVK Changelog
 
+## v1.3
+- **Atomic State & Safeguards**: Switched to atomic state writes to prevent file corruption, and corrected the first-boot counter to start at `0/3`.
+- **Improved Root & Recovery Compatibility**: Expanded Vulkan checks during TWRP/recovery installs, and added dynamic `resetprop` path resolution for Magisk, KernelSU, and APatch.
+- **Code Refactor & Logging**: Cleaned up codebase by centralizing functions into a shared utility script (`util.sh`), and added proper syslog priority prefixes to `/dev/kmsg` outputs.
+
 ## v1.2
 - **Boot Timeout Margin**: Increased boot completion wait timeout from 300s to 480s to prevent false-positives on slower devices.
 - **Robust Guarding**: Prevented late-boot `service.sh` from writing state resets if the module has already been disabled by the bootloop guard.

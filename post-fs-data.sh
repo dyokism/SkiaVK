@@ -3,22 +3,9 @@
 # early boot: safe property injection with bootloop guard
 
 MODDIR=${0%/*}
-PERSISTENT="/data/adb/skia_vulkan"
-STATE_FILE="$PERSISTENT/boot_state"
 
-# define helper function
-update_description() {
-    local desc="$1"
-    if [ -f "$MODDIR/module.prop" ]; then
-        local temp_prop="$MODDIR/module.prop.tmp"
-        (
-            grep -v '^description=' "$MODDIR/module.prop"
-            echo "description=$desc"
-        ) > "$temp_prop" && mv "$temp_prop" "$MODDIR/module.prop"
-    fi
-}
-
-LOG_FILE="$PERSISTENT/skia_vulkan.log"
+# source shared utilities
+. "$MODDIR/util.sh"
 
 mkdir -p "$PERSISTENT" 2>/dev/null
 chmod 700 "$PERSISTENT" 2>/dev/null
@@ -27,9 +14,17 @@ chmod 700 "$PERSISTENT" 2>/dev/null
 echo "=== SkiaVK Boot Log ===" > "$LOG_FILE"
 echo "$(date): [INFO] early boot: post-fs-data.sh started." >> "$LOG_FILE"
 
+# check resetprop availability
+if ! command -v "$RESETPROP" >/dev/null 2>&1; then
+    echo "$(date): [ERROR] resetprop binary not found in PATH or standard directories." >> "$LOG_FILE"
+    echo "<3>skia_vulkan: resetprop not found, aborting property injection." >> /dev/kmsg
+    update_description "error: resetprop not found in PATH"
+    exit 1
+fi
+
 # load state
 BOOT_COUNTER=0
-COMPLETED_FLAG=0
+COMPLETED_FLAG=1 # default to 1 (completed) on fresh install or reset
 if [ -f "$STATE_FILE" ]; then
     BOOT_COUNTER=$(grep '^BOOT_COUNTER=' "$STATE_FILE" | cut -d'=' -f2 | tr -d '\r')
     COMPLETED_FLAG=$(grep '^COMPLETED_FLAG=' "$STATE_FILE" | cut -d'=' -f2 | tr -d '\r')
@@ -50,17 +45,16 @@ else
     BOOT_COUNTER=0
 fi
 
-# clear completed flag for current boot
+# clear completed flag for current boot (will be set to 1 by service.sh on success)
 COMPLETED_FLAG=0
 
-# save current state
-echo "BOOT_COUNTER=$BOOT_COUNTER" > "$STATE_FILE"
-echo "COMPLETED_FLAG=$COMPLETED_FLAG" >> "$STATE_FILE"
+# save current state atomically
+write_state "$BOOT_COUNTER" "$COMPLETED_FLAG"
 echo "$(date): [INFO] boot counter: ${BOOT_COUNTER}/3" >> "$LOG_FILE"
 
 # safe bootloop check (limit 3 failed boots)
 if [ "$BOOT_COUNTER" -ge 3 ]; then
-    echo "skia_vulkan: bootloop detected, disabling module." >> /dev/kmsg
+    echo "<3>skia_vulkan: bootloop detected, disabling module." >> /dev/kmsg
     echo "$(date): [ERROR] Bootloop detected! Disabling module." >> "$LOG_FILE"
     
     # disable module
@@ -72,17 +66,17 @@ if [ "$BOOT_COUNTER" -ge 3 ]; then
 fi
 
 # apply early property injection
-echo "$(date): [INFO] applying debug.hwui.renderer=skiavk via resetprop" >> "$LOG_FILE"
-resetprop debug.hwui.renderer skiavk
+echo "$(date): [INFO] applying debug.hwui.renderer=skiavk via $RESETPROP" >> "$LOG_FILE"
+"$RESETPROP" debug.hwui.renderer skiavk
 
 # verify if resetprop succeeded
 VERIFIED_RENDERER=$(getprop debug.hwui.renderer 2>/dev/null | tr -d '\r')
 if [ "$VERIFIED_RENDERER" = "skiavk" ]; then
-    echo "skia_vulkan: successfully applied skiavk." >> /dev/kmsg
+    echo "<6>skia_vulkan: successfully applied skiavk." >> /dev/kmsg
     echo "$(date): [SUCCESS] successfully applied skiavk (early boot)" >> "$LOG_FILE"
     update_description "status: active (skiavk) | bootloop guard: armed (${BOOT_COUNTER}/3)"
 else
-    echo "skia_vulkan: failed to apply skiavk." >> /dev/kmsg
+    echo "<3>skia_vulkan: failed to apply skiavk." >> /dev/kmsg
     echo "$(date): [ERROR] failed to apply skiavk (early boot)" >> "$LOG_FILE"
     update_description "failed to apply skiavk renderer."
 fi
