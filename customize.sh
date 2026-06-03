@@ -25,8 +25,6 @@ fi
 for libpath in \
     /vendor/lib64/hw/vulkan.*.so \
     /vendor/lib/hw/vulkan.*.so \
-    /vendor/lib64/egl/libGLES_mali.so \
-    /vendor/lib/egl/libGLES_mali.so \
     /vendor/lib64/vulkan.*.so \
     /vendor/lib/vulkan.*.so \
     /vendor/lib64/libvulkan_*.so \

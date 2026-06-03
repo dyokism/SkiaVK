@@ -20,7 +20,7 @@ TIMEOUT=480
 ELAPSED=0
 until [ "$(getprop sys.boot_completed)" = "1" ]; do
     if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
-        echo "$(date): [WARNING] boot completion timeout reached (${TIMEOUT}s)." >> "$LOG_FILE"
+        echo "$(date): [WARNING] boot completion timeout reached (${ELAPSED}s)." >> "$LOG_FILE"
         echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg
         update_description "status: timeout waiting for boot completion"
         exit 0
@@ -47,10 +47,8 @@ if [ "$ACTIVE_RENDERER" != "skiavk" ]; then
 fi
 
 # disarm bootloop guard atomically
-if [ -d "$PERSISTENT" ]; then
-    write_state 0 1
-    echo "$(date): [INFO] late boot: bootloop guard disarmed." >> "$LOG_FILE"
-fi
+write_state 0 1
+echo "$(date): [INFO] late boot: bootloop guard disarmed." >> "$LOG_FILE"
 
 # verify final state of renderer
 FINAL_RENDERER=$(getprop debug.hwui.renderer 2>/dev/null | tr -d '\r')

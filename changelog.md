@@ -1,5 +1,10 @@
 # SkiaVK Changelog
 
+## v1.4
+- **Clean Vulkan Detection**: Removed EGL/OpenGL ES library (`libGLES_mali.so`) from customize.sh Vulkan check to prevent false-positives on older Mali GPUs.
+- **Improved Logging & Robustness**: Dynamically log timeout durations and log manual counter reset actions.
+- **Robust Filesystem Handling**: Add fallback logging when updating properties on OverlayFS filesystems, and clean up redundant directory checks.
+
 ## v1.3
 - **Atomic State & Safeguards**: Switched to atomic state writes to prevent file corruption, and corrected the first-boot counter to start at `0/3`.
 - **Improved Root & Recovery Compatibility**: Expanded Vulkan checks during TWRP/recovery installs, and added dynamic `resetprop` path resolution for Magisk, KernelSU, and APatch.

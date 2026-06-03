@@ -9,6 +9,7 @@ MODDIR=${0%/*}
 
 # reset state atomically
 write_state 0 1
+echo "$(date): [INFO] action.sh: counter reset by user." >> "$LOG_FILE"
 
 # remove disable flag to re-enable module
 rm -f "$MODDIR/disable"

@@ -4,9 +4,9 @@
 
 **Memaksa rendering Skia Vulkan di Android dengan perlindungan bootloop otomatis berbasis atomic.**
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Lisensi](https://img.shields.io/badge/Lisensi-MIT-blue.svg)
 ![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Version](https://img.shields.io/badge/Version-1.3-orange.svg)
+![Versi](https://img.shields.io/badge/Versi-1.4-orange.svg)
 ![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
 
 ## Deskripsi Umum
