@@ -15,7 +15,11 @@ echo "$(date): [INFO] action.sh: counter reset by user." >> "$LOG_FILE"
 rm -f "$MODDIR/disable"
 
 # reset description to armed status
-update_description "status: active (skiavk) | bootloop guard: armed (0/3)"
+update_description "status: active (skiavk) | bootloop guard: u reset it earlier bruh"
+
+# Note: We do not call resetprop here to apply the renderer property live.
+# Changing the hwui renderer requires a reboot to restart system services (such as SystemUI)
+# and apply the change properly across all active application processes.
 
 # print status messages to ui
 echo "- Bootloop counter has been reset."

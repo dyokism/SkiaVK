@@ -31,7 +31,7 @@ run_service() {
     # Wait for boot completion
     if command -v "$RESETPROP" >/dev/null 2>&1; then
         # Use resetprop -w (efficient blocking wait)
-        "$RESETPROP" -w sys.boot_completed 0 &
+        "$RESETPROP" -w sys.boot_completed 1 &
         local wait_pid=$!
 
         (
@@ -39,7 +39,7 @@ run_service() {
             if kill -0 "$wait_pid" 2>/dev/null; then
                 echo "$(date): [WARNING] boot completion timeout reached (480s)." >> "$LOG_FILE"
                 echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg
-                update_description "status: timeout waiting for boot completion"
+                update_description "Why is ur boot time so long?"
                 kill "$wait_pid" 2>/dev/null
             fi
         ) &
@@ -47,6 +47,7 @@ run_service() {
 
         if ! wait "$wait_pid"; then
             kill "$watchdog_pid" 2>/dev/null
+            echo "$(date): [WARN] boot wait ended (timeout or killed), not disarming guard." >> "$LOG_FILE"
             return 0
         fi
         kill "$watchdog_pid" 2>/dev/null
@@ -58,7 +59,7 @@ run_service() {
             if [ "$elapsed" -ge "$timeout" ]; then
                 echo "$(date): [WARNING] boot completion timeout reached (${elapsed}s)." >> "$LOG_FILE"
                 echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg
-                update_description "status: timeout waiting for boot completion"
+                update_description "Why is ur boot time so long?"
                 return 0
             fi
             sleep 2
@@ -92,11 +93,11 @@ run_service() {
     local FINAL_RENDERER
     FINAL_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null | tr -d '\r')
     if [ "$FINAL_RENDERER" = "skiavk" ]; then
-        update_description "status: active (skiavk) | boot: ok"
+        update_description "status: active (skiavk) | boot: normal ;)"
         echo "<6>skia_vulkan: boot successful, bootloop guard disarmed." >> /dev/kmsg
         echo "$(date): [SUCCESS] successfully enforced skiavk renderer (late boot)" >> "$LOG_FILE"
     else
-        update_description "status: failed to apply skiavk | boot: ok"
+        update_description "status: failed to apply skiavk | but at least boot still normal ;)"
         echo "<3>skia_vulkan: boot successful, but failed to enforce skiavk renderer." >> /dev/kmsg
         echo "$(date): [ERROR] failed to enforce skiavk renderer (late boot)" >> "$LOG_FILE"
     fi

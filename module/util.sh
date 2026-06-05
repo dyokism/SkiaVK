@@ -37,7 +37,7 @@ update_description() {
         (
             grep -v '^description=' "$MODDIR/module.prop"
             echo "description=$desc"
-        ) > "$temp_prop" && mv "$temp_prop" "$MODDIR/module.prop" || echo "$(date): [WARN] prop update failed" >> "$LOG_FILE"
+        ) > "$temp_prop" && (mv "$temp_prop" "$MODDIR/module.prop" || { cp -f "$temp_prop" "$MODDIR/module.prop" && rm -f "$temp_prop"; }) || echo "$(date): [WARN] prop update failed" >> "$LOG_FILE"
     fi
 }
 

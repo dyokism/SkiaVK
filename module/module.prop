@@ -1,8 +1,8 @@
 id=skia_vulkan
 name=SkiaVK
-version=1.5
-versionCode=150
+version=2.0
+versionCode=200
 author=dyokism
-banner=https://raw.githubusercontent.com/dyokism/SkiaVK/main/vulkan_logo.png
+banner=https://raw.githubusercontent.com/dyokism/SkiaVK/main/vulkan.webp
 description=force skia vulkan (skiavk) renderer with automatic bootloop protection.
 updateJson=https://raw.githubusercontent.com/dyokism/SkiaVK/main/module/update.json

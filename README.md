@@ -1,9 +1,7 @@
-[English](README.md) | [Bahasa Indonesia](README.id.md)
-
 # SkiaVK
 
 <p align="center">
-  <img src="vulkan_logo.png" alt="Vulkan Logo" width="600">
+  <img src="vulkan.webp" alt="Vulkan Logo" width="600">
 </p>
 
 <p align="center">
@@ -11,10 +9,13 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/License-MIT-e52b20?style=flat-square" alt="License">
-  <img src="https://img.shields.io/badge/Android-10.0%2B-e52b20?style=flat-square&logo=android&logoColor=white" alt="Android">
-  <img src="https://img.shields.io/badge/Version-1.5-e52b20?style=flat-square&logo=github&logoColor=white" alt="Version">
-  <img src="https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-e52b20?style=flat-square&logo=linux&logoColor=white" alt="Root">
+  <img src="https://img.shields.io/badge/License-MIT-708090?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Android-10.0%2B-78c257?style=for-the-badge&logo=android&logoColor=white" alt="Android">
+  <img src="https://img.shields.io/badge/Version-2.0-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Version">
+  <img src="https://img.shields.io/badge/Root-KSU%20%7C%20APatch%20%7C%20Magisk-e52b20?style=for-the-badge&logo=linux&logoColor=white" alt="Root">
+  <br>
+  <br>
+  <a href="README.md">English</a> | <a href="README.id.md">Bahasa Indonesia</a>
 </p>
 
 ## Overview
@@ -28,6 +29,16 @@ SkiaVK changes the default HWUI renderer from OpenGL to Vulkan. This provides sm
 - **Butter-Smooth UI**: Forces Vulkan rendering for faster animations and less GPU lag.
 - **Fail-Safe Bootloop Guard**: Automatically disables the module after 3 failed boot attempts using safe, atomic file updates.
 - **Easy Recovery**: Re-enable the module and reset the safety counter with a single tap of the **Action** button in KernelSU/APatch.
+
+---
+
+## Verification
+
+Verified and tested on **Samsung Galaxy S23 (Snapdragon 8 Gen 2)** running KernelSU-Next. Below is the GPUWatch overlay showing the active Vulkan (`skiavk`) rendering pipeline and module status:
+
+<p align="center">
+  <img src="s23_verify.webp" alt="Samsung S23 GPUWatch Verification" width="500">
+</p>
 
 ---
 
@@ -106,7 +117,11 @@ flowchart TD
 
 ---
 
-## Developer & License
+## Developer, Credits & License
 
 - **Developer**: [dyokism](https://github.com/dyokism)
-- **License**: MIT
+- **License**: [MIT](LICENSE)
+- **Credits & Acknowledgements**:
+  - **Vulkan API** by [The Khronos Group](https://www.vulkan.org/)
+  - **Root Managers**: [Magisk](https://github.com/topjohnwu/Magisk), [KernelSU](https://github.com/tiann/KernelSU), and [APatch](https://github.com/bmax121/APatch)
+  - **Samsung GPUWatch** for performance debugging tools

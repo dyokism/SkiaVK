@@ -32,7 +32,7 @@ run_post_fs_data() {
     if ! command -v "$RESETPROP" >/dev/null 2>&1; then
         echo "$(date): [ERROR] resetprop binary not found in PATH or standard directories." >> "$LOG_FILE"
         echo "<3>skia_vulkan: resetprop not found, aborting property injection." >> /dev/kmsg
-        update_description "error: resetprop not found in PATH"
+        update_description "[ERROR!][WARNING!] NO RESETPROP AAHHHhhHH"
         return 1
     fi
 
@@ -75,7 +75,7 @@ run_post_fs_data() {
         touch "$MODDIR/disable"
         
         # update description on failure
-        update_description "anti-bootloop triggered. module disabled. re-enable to activate."
+        update_description "Bootloop guard triggered! Please re-enable me :("
         return 0
     fi
 
@@ -93,7 +93,7 @@ run_post_fs_data() {
     else
         echo "<3>skia_vulkan: failed to apply skiavk." >> /dev/kmsg
         echo "$(date): [ERROR] failed to apply skiavk (early boot)" >> "$LOG_FILE"
-        update_description "failed to apply skiavk renderer."
+        update_description "failed to apply skiavk renderer :("
     fi
 }
 

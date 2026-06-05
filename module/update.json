@@ -1,6 +1,6 @@
 {
-  "version": "1.5",
-  "versionCode": 150,
+  "version": "2.0",
+  "versionCode": 200,
   "zipUrl": "https://github.com/dyokism/SkiaVK/releases/latest/download/SkiaVK.zip",
   "changelog": "https://raw.githubusercontent.com/dyokism/SkiaVK/main/module/changelog.md"
 }

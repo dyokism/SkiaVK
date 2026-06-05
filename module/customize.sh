@@ -46,9 +46,7 @@ for libpath in \
     /vendor/lib64/libvulkan_*.so \
     /vendor/lib/libvulkan_*.so \
     /system/lib64/hw/vulkan.*.so \
-    /system/lib/hw/vulkan.*.so \
-    /system/lib64/libvulkan.so \
-    /system/lib/libvulkan.so; do
+    /system/lib/hw/vulkan.*.so; do
     if [ -f "$libpath" ]; then
         HAS_VULKAN_LIB=1
         break

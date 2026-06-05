@@ -1,9 +1,7 @@
-[English](README.md) | [Bahasa Indonesia](README.id.md)
-
 # SkiaVK
 
 <p align="center">
-  <img src="vulkan_logo.png" alt="Vulkan Logo" width="600">
+  <img src="vulkan.webp" alt="Vulkan Logo" width="600">
 </p>
 
 <p align="center">
@@ -11,10 +9,13 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Lisensi-MIT-e52b20?style=flat-square" alt="Lisensi">
-  <img src="https://img.shields.io/badge/Android-10.0%2B-e52b20?style=flat-square&logo=android&logoColor=white" alt="Android">
-  <img src="https://img.shields.io/badge/Versi-1.5-e52b20?style=flat-square&logo=github&logoColor=white" alt="Versi">
-  <img src="https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-e52b20?style=flat-square&logo=linux&logoColor=white" alt="Root">
+  <img src="https://img.shields.io/badge/Lisensi-MIT-708090?style=for-the-badge" alt="Lisensi">
+  <img src="https://img.shields.io/badge/Android-10.0%2B-78c257?style=for-the-badge&logo=android&logoColor=white" alt="Android">
+  <img src="https://img.shields.io/badge/Versi-2.0-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Versi">
+  <img src="https://img.shields.io/badge/Root-KSU%20%7C%20APatch%20%7C%20Magisk-e52b20?style=for-the-badge&logo=linux&logoColor=white" alt="Root">
+  <br>
+  <br>
+  <a href="README.md">English</a> | <a href="README.id.md">Bahasa Indonesia</a>
 </p>
 
 ## Deskripsi Umum
@@ -28,6 +29,16 @@ SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan an
 - **UI Jauh Lebih Mulus**: Memaksa penggunaan Vulkan untuk animasi yang lebih cepat dan mengurangi lag pada GPU.
 - **Proteksi Bootloop Aman**: Mematikan modul secara otomatis jika gagal booting 3 kali berturut-turut dengan sistem tulis berkas yang aman (atomic).
 - **Pemulihan Sekali Ketuk**: Aktifkan kembali modul dan reset penghitung bootloop cukup dengan menekan tombol **Action** di manajer KernelSU/APatch.
+
+---
+
+## Bukti Uji Coba
+
+Telah diuji dan diverifikasi pada **Samsung Galaxy S23 (Snapdragon 8 Gen 2)** dengan KernelSU-Next. Berikut adalah tangkapan layar **GPUWatch** yang menampilkan pipa rendering Vulkan (`skiavk`) aktif beserta status modul yang terpasang:
+
+<p align="center">
+  <img src="s23_verify.webp" alt="Verifikasi GPUWatch Samsung S23" width="500">
+</p>
 
 ---
 
@@ -106,7 +117,11 @@ flowchart TD
 
 ---
 
-## Pengembang & Lisensi
+## Pengembang, Kredit & Lisensi
 
 - **Pengembang**: [dyokism](https://github.com/dyokism)
-- **Lisensi**: MIT
+- **Lisensi**: [MIT](LICENSE)
+- **Kredit & Apresiasi**:
+  - **Vulkan API** oleh [The Khronos Group](https://www.vulkan.org/)
+  - **Manajer Root**: [Magisk](https://github.com/topjohnwu/Magisk), [KernelSU](https://github.com/tiann/KernelSU), dan [APatch](https://github.com/bmax121/APatch)
+  - **Samsung GPUWatch** sebagai alat bantu debugging performa grafis

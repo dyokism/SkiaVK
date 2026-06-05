@@ -1,5 +1,12 @@
 # SkiaVK Changelog
 
+## v2.0
+- **Crucial Boot Completed Watchdog Fix**: Fixed a bug where `resetprop -w` waited for `sys.boot_completed` to be `0` instead of `1`.
+- **Accurate Vulkan Detection**: Removed core system Vulkan loader checks in `customize.sh` to prevent false-positives and ensure actual hardware driver presence.
+- **Improved Filesystem Robustness**: Added copy fallback to `update_description` in `util.sh` when moving files on overlayfs filesystems.
+- **Robust Watchdog Handling**: Avoid disarming the bootloop guard if the boot wait ends prematurely due to timeout or being killed.
+- **Visuals and Descriptions**: Polished active/fail status descriptions to be more clear and casual, and updated banner artwork.
+
 ## v1.5
 - **Airtight KSU & APatch Compatibility**: Switched property injection to `resetprop -n` in `post-fs-data.sh` to prevent `init` deadlocks, and replaced all sourced `exit` calls with clean function returns.
 - **Robust Boot completed Watchdog**: Replaced getprop poll loop with efficient `resetprop -w` and implemented a parallel 480-second watchdog fallback.
