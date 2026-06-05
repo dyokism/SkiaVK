@@ -2,12 +2,20 @@
 
 # SkiaVK
 
-**Forces Skia Vulkan rendering on Android with built-in atomic bootloop protection.**
+<p align="center">
+  <img src="vulkan_logo.png" alt="Vulkan Logo" width="600">
+</p>
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Version](https://img.shields.io/badge/Version-1.4-orange.svg)
-![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
+<p align="center">
+  <strong>Forces Skia Vulkan rendering on Android with built-in atomic bootloop protection.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-e52b20?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/Android-10.0%2B-e52b20?style=flat-square&logo=android&logoColor=white" alt="Android">
+  <img src="https://img.shields.io/badge/Version-1.5-e52b20?style=flat-square&logo=github&logoColor=white" alt="Version">
+  <img src="https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-e52b20?style=flat-square&logo=linux&logoColor=white" alt="Root">
+</p>
 
 ## Overview
 
@@ -35,9 +43,10 @@ SkiaVK changes the default HWUI renderer from OpenGL to Vulkan. This provides sm
 
 ## Installation & Configuration
 
-1. Install the ZIP file via your root manager's **Modules** tab.
-2. **Reboot** your device to activate.
-3. Check logs at: `/data/adb/skia_vulkan/skia_vulkan.log`
+1. Download the latest `SkiaVK.zip` from [Releases](https://github.com/dyokism/SkiaVK/releases).
+2. Install the ZIP file via your root manager's **Modules** tab.
+3. **Reboot** your device to activate.
+4. Check logs at: `/data/adb/skia_vulkan/skia_vulkan.log`
 
 ---
 

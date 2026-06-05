@@ -1,5 +1,11 @@
 # SkiaVK Changelog
 
+## v1.5
+- **Airtight KSU & APatch Compatibility**: Switched property injection to `resetprop -n` in `post-fs-data.sh` to prevent `init` deadlocks, and replaced all sourced `exit` calls with clean function returns.
+- **Robust Boot completed Watchdog**: Replaced getprop poll loop with efficient `resetprop -w` and implemented a parallel 480-second watchdog fallback.
+- **Strict Error Handling**: Added `set -eu` and trap handlers to log failures to `/dev/kmsg` and persistent logs.
+- **Layout & Metadata Cleanup**: Relocated core module files to a dedicated `module/` subdirectory and removed non-standard `module.prop` fields.
+
 ## v1.4
 - **Clean Vulkan Detection**: Removed EGL/OpenGL ES library (`libGLES_mali.so`) from customize.sh Vulkan check to prevent false-positives on older Mali GPUs.
 - **Improved Logging & Robustness**: Dynamically log timeout durations and log manual counter reset actions.

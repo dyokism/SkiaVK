@@ -2,6 +2,22 @@
 # skia_vulkan - customize.sh
 # clean, brief installation log with real vulkan hal checks
 
+# Enforce minimum SDK level (Android 10+, API 29)
+if [ "$API" -lt 29 ]; then
+    abort "[!] Error: Android 10+ (API 29) is required for Skia Vulkan!"
+fi
+
+# Detect active root manager
+if [ "$APATCH" = "true" ]; then
+    ui_print "- Root Manager: APatch"
+elif [ "$KSU" = "true" ]; then
+    ui_print "- Root Manager: KernelSU"
+elif [ -n "$MAGISK_VER" ]; then
+    ui_print "- Root Manager: Magisk ($MAGISK_VER)"
+else
+    ui_print "- Root Manager: Unknown / Generic"
+fi
+
 ui_print "- Installing SkiaVK..."
 
 # check for vulkan feature and vendor vulkan hal drivers

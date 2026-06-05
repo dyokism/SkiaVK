@@ -2,12 +2,20 @@
 
 # SkiaVK
 
-**Memaksa rendering Skia Vulkan di Android dengan perlindungan bootloop otomatis berbasis atomic.**
+<p align="center">
+  <img src="vulkan_logo.png" alt="Vulkan Logo" width="600">
+</p>
 
-![Lisensi](https://img.shields.io/badge/Lisensi-MIT-blue.svg)
-![Android](https://img.shields.io/badge/Android-10.0%2B-green.svg)
-![Versi](https://img.shields.io/badge/Versi-1.4-orange.svg)
-![Root](https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red.svg)
+<p align="center">
+  <strong>Memaksa rendering Skia Vulkan di Android dengan perlindungan bootloop otomatis berbasis atomic.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Lisensi-MIT-e52b20?style=flat-square" alt="Lisensi">
+  <img src="https://img.shields.io/badge/Android-10.0%2B-e52b20?style=flat-square&logo=android&logoColor=white" alt="Android">
+  <img src="https://img.shields.io/badge/Versi-1.5-e52b20?style=flat-square&logo=github&logoColor=white" alt="Versi">
+  <img src="https://img.shields.io/badge/Root-Magisk%20%7C%20KernelSU%20%7C%20APatch-e52b20?style=flat-square&logo=linux&logoColor=white" alt="Root">
+</p>
 
 ## Deskripsi Umum
 
@@ -35,9 +43,10 @@ SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan an
 
 ## Instalasi & Konfigurasi
 
-1. Pasang berkas ZIP melalui tab **Modules** di manager root Anda.
-2. **Reboot** (Mulai ulang) perangkat Anda untuk mengaktifkan.
-3. Periksa berkas log di: `/data/adb/skia_vulkan/skia_vulkan.log`
+1. Unduh berkas `SkiaVK.zip` terbaru dari halaman [Releases](https://github.com/dyokism/SkiaVK/releases).
+2. Pasang berkas ZIP melalui tab **Modules** di manager root Anda.
+3. **Reboot** (Mulai ulang) perangkat Anda untuk mengaktifkan.
+4. Periksa berkas log di: `/data/adb/skia_vulkan/skia_vulkan.log`
 
 ---
 

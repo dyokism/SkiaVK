@@ -19,7 +19,9 @@ if ! command -v resetprop >/dev/null 2>&1; then
         /data/adb/ksu/bin/resetprop \
         /data/adb/apatch/bin/resetprop \
         /data/adb/magisk/resetprop \
-        /data/adb/ap/bin/resetprop; do
+        /data/adb/ap/bin/resetprop \
+        /sbin/resetprop \
+        /debug_ramdisk/resetprop; do
         if [ -x "$path" ]; then
             RESETPROP="$path"
             break
