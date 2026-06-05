@@ -28,43 +28,51 @@ run_service() {
 
     echo "$(date): [INFO] late boot: service.sh started, waiting for boot completion..." >> "$LOG_FILE"
 
-    # Wait for boot completion
-    if command -v "$RESETPROP" >/dev/null 2>&1; then
-        # Use resetprop -w (efficient blocking wait)
-        "$RESETPROP" -w sys.boot_completed 1 &
-        local wait_pid=$!
+    # Check if boot is already completed (especially on fast devices like S23)
+    local boot_completed="0"
+    if [ "$(getprop sys.boot_completed)" = "1" ] || [ "$("$RESETPROP" sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; then
+        boot_completed="1"
+    fi
 
-        (
-            sleep 480
-            if kill -0 "$wait_pid" 2>/dev/null; then
-                echo "$(date): [WARNING] boot completion timeout reached (480s)." >> "$LOG_FILE"
-                echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg
-                update_description "Why is ur boot time so long?"
-                kill "$wait_pid" 2>/dev/null
-            fi
-        ) &
-        local watchdog_pid=$!
+    if [ "$boot_completed" != "1" ]; then
+        # Wait for boot completion
+        if command -v "$RESETPROP" >/dev/null 2>&1; then
+            # Use resetprop -w (efficient blocking wait)
+            "$RESETPROP" -w sys.boot_completed 1 &
+            local wait_pid=$!
 
-        if ! wait "$wait_pid"; then
-            kill "$watchdog_pid" 2>/dev/null
-            echo "$(date): [WARN] boot wait ended (timeout or killed), not disarming guard." >> "$LOG_FILE"
-            return 0
-        fi
-        kill "$watchdog_pid" 2>/dev/null
-    else
-        # Fallback to polling getprop if resetprop is not available
-        local timeout=480
-        local elapsed=0
-        until [ "$(getprop sys.boot_completed)" = "1" ]; do
-            if [ "$elapsed" -ge "$timeout" ]; then
-                echo "$(date): [WARNING] boot completion timeout reached (${elapsed}s)." >> "$LOG_FILE"
-                echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg
-                update_description "Why is ur boot time so long?"
+            (
+                sleep 480
+                if kill -0 "$wait_pid" 2>/dev/null; then
+                    echo "$(date): [WARNING] boot completion timeout reached (480s)." >> "$LOG_FILE"
+                    echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg
+                    update_description "Why is ur boot time so long?"
+                    kill "$wait_pid" 2>/dev/null
+                fi
+            ) &
+            local watchdog_pid=$!
+
+            if ! wait "$wait_pid"; then
+                kill "$watchdog_pid" 2>/dev/null
+                echo "$(date): [WARN] boot wait ended (timeout or killed), not disarming guard." >> "$LOG_FILE"
                 return 0
             fi
-            sleep 2
-            elapsed=$((elapsed + 2))
-        done
+            kill "$watchdog_pid" 2>/dev/null
+        else
+            # Fallback to polling getprop if resetprop is not available
+            local timeout=480
+            local elapsed=0
+            until [ "$(getprop sys.boot_completed)" = "1" ]; do
+                if [ "$elapsed" -ge "$timeout" ]; then
+                    echo "$(date): [WARNING] boot completion timeout reached (${elapsed}s)." >> "$LOG_FILE"
+                    echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg
+                    update_description "Why is ur boot time so long?"
+                    return 0
+                fi
+                sleep 2
+                elapsed=$((elapsed + 2))
+            done
+        fi
     fi
 
     # check resetprop availability for property injection

@@ -1,7 +1,8 @@
 # SkiaVK Changelog
 
-## v2.0
+## v2.0.1
 - **Crucial Boot Completed Watchdog Fix**: Fixed a bug where `resetprop -w` waited for `sys.boot_completed` to be `0` instead of `1`.
+- **Fast Devices Deadlock Fix**: Bypassed `resetprop -w` wait if boot completion is already finished to prevent bootloop guard hangs on high-performance devices.
 - **Accurate Vulkan Detection**: Removed core system Vulkan loader checks in `customize.sh` to prevent false-positives and ensure actual hardware driver presence.
 - **Improved Filesystem Robustness**: Added copy fallback to `update_description` in `util.sh` when moving files on overlayfs filesystems.
 - **Robust Watchdog Handling**: Avoid disarming the bootloop guard if the boot wait ends prematurely due to timeout or being killed.
