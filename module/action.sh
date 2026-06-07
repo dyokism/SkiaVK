@@ -17,10 +17,13 @@ rm -f "$MODDIR/disable"
 # reset description to armed status
 update_description "status: active (skiavk) | bootloop guard: u reset it earlier bruh"
 
-# Note: We do not call resetprop here to apply the renderer property live.
-# Changing the hwui renderer requires a reboot to restart system services (such as SystemUI)
-# and apply the change properly across all active application processes.
+# note: reboot is required to restart systemui and apply renderer changes
 
 # print status messages to ui
-echo "- Bootloop counter has been reset."
-echo "- Please reboot your device to apply changes."
+if command -v ui_print >/dev/null 2>&1; then
+    ui_print "- Bootloop counter has been reset."
+    ui_print "- Please reboot your device to apply changes."
+else
+    echo "- Bootloop counter has been reset."
+    echo "- Please reboot your device to apply changes."
+fi

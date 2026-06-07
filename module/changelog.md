@@ -1,5 +1,10 @@
 # SkiaVK Changelog
 
+## v2.2
+- **Airtight Deadlock and Stability Refactor**: Enforced `resetprop -n` for late-boot injections to prevent socket deadlocks, and hardened Vulkan screening to filter out and block software Vulkan renderers (like SwiftShader/Lavapipe) preventing bootloops.
+- **POSIX & Subshell Optimizations**: Re-implemented state file parsing via a pure POSIX `while read` loop, optimized uptime parsing using native `read` rather than forking `cut`, and replaced subshell command groupings with curly brace blocks `{ ... }` to minimize early-boot process forks.
+- **SELinux Resiliency**: Added stderr redirection to `/dev/null` for all `/dev/kmsg` logging calls to prevent permission denials and noise in custom domains.
+
 ## v2.1
 - **Crucial Boot Completed Watchdog Fix**: Fixed a bug where `resetprop -w` waited for `sys.boot_completed` to be `0` instead of `1`.
 - **Fast Devices Deadlock Fix**: Replaced the buggy `resetprop -w` wait with a highly robust polling loop to prevent bootloop guard deadlocks due to SELinux/socket constraints in custom root domains.

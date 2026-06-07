@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Lisensi-MIT-708090?style=for-the-badge" alt="Lisensi">
   <img src="https://img.shields.io/badge/Android-10.0%2B-78c257?style=for-the-badge&logo=android&logoColor=white" alt="Android">
-  <img src="https://img.shields.io/badge/Versi-2.1-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Versi">
+  <img src="https://img.shields.io/badge/Versi-2.2-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Versi">
   <img src="https://img.shields.io/badge/Root-KSU%20%7C%20APatch%20%7C%20Magisk-e52b20?style=for-the-badge&logo=linux&logoColor=white" alt="Root">
   <br>
   <br>
@@ -28,7 +28,8 @@ SkiaVK mengubah renderer bawaan HWUI dari OpenGL ke Vulkan untuk menghasilkan an
 
 - **UI Jauh Lebih Mulus**: Memaksa penggunaan Vulkan untuk animasi yang lebih cepat dan mengurangi lag pada GPU.
 - **Proteksi Bootloop Aman**: Mematikan modul secara otomatis jika gagal booting 3 kali berturut-turut dengan sistem tulis berkas yang aman (atomic).
-- **Pemulihan Sekali Ketuk**: Aktifkan kembali modul dan reset penghitung bootloop cukup dengan menekan tombol **Action** di manajer KernelSU/APatch.
+- **Pemulihan Sekali Ketuk**: Aktifkan kembali modul dan reset penghitung bootloop cukup dengan menekan tombol **Action** di manajer root Anda.
+- **Proteksi Vulkan Software**: Membatalkan instalasi secara otomatis pada emulator, mesin virtual, atau perangkat yang menggunakan renderer Vulkan berbasis software (seperti SwiftShader, Lavapipe) untuk menghindari kemacetan pada tampilan sistem.
 
 ---
 

@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/License-MIT-708090?style=for-the-badge" alt="License">
   <img src="https://img.shields.io/badge/Android-10.0%2B-78c257?style=for-the-badge&logo=android&logoColor=white" alt="Android">
-  <img src="https://img.shields.io/badge/Version-2.1-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Version">
+  <img src="https://img.shields.io/badge/Version-2.2-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Version">
   <img src="https://img.shields.io/badge/Root-KSU%20%7C%20APatch%20%7C%20Magisk-e52b20?style=for-the-badge&logo=linux&logoColor=white" alt="Root">
   <br>
   <br>
@@ -28,7 +28,8 @@ SkiaVK changes the default HWUI renderer from OpenGL to Vulkan. This provides sm
 
 - **Butter-Smooth UI**: Forces Vulkan rendering for faster animations and less GPU lag.
 - **Fail-Safe Bootloop Guard**: Automatically disables the module after 3 failed boot attempts using safe, atomic file updates.
-- **Easy Recovery**: Re-enable the module and reset the safety counter with a single tap of the **Action** button in KernelSU/APatch.
+- **Easy Recovery**: Re-enable the module and reset the safety counter with a single tap of the **Action** button in your root manager.
+- **Software Vulkan Protection**: Automatically aborts installation on emulators, virtual machines, or devices running software Vulkan renderers (e.g. SwiftShader, Lavapipe) to prevent GUI freezes.
 
 ---
 

@@ -12,12 +12,22 @@ PERSISTENT="/data/adb/skia_vulkan"
 STATE_FILE="$PERSISTENT/boot_state"
 LOG_FILE="$PERSISTENT/skia_vulkan.log"
 
+# helper to retrieve monotonic boot uptime or date fallback
+get_timestamp() {
+    if [ -f /proc/uptime ]; then
+        local uptime
+        read -r uptime _ < /proc/uptime
+        echo "${uptime}s"
+    else
+        date "+%Y-%m-%d %H:%M:%S"
+    fi
+}
+
 # resolve resetprop path for kernelsu/apatch early boot
 RESETPROP="resetprop"
 if ! command -v resetprop >/dev/null 2>&1; then
     for path in \
         /data/adb/ksu/bin/resetprop \
-        /data/adb/apatch/bin/resetprop \
         /data/adb/magisk/resetprop \
         /data/adb/ap/bin/resetprop \
         /sbin/resetprop \
@@ -34,10 +44,14 @@ update_description() {
     local desc="$1"
     if [ -f "$MODDIR/module.prop" ]; then
         local temp_prop="$MODDIR/module.prop.tmp"
-        (
+        {
             grep -v '^description=' "$MODDIR/module.prop"
             echo "description=$desc"
-        ) > "$temp_prop" && (mv "$temp_prop" "$MODDIR/module.prop" || { cp -f "$temp_prop" "$MODDIR/module.prop" && rm -f "$temp_prop"; }) || echo "$(date): [WARN] prop update failed" >> "$LOG_FILE"
+        } > "$temp_prop" && (mv "$temp_prop" "$MODDIR/module.prop" || { cp -f "$temp_prop" "$MODDIR/module.prop" && rm -f "$temp_prop"; }) || {
+            mkdir -p "$PERSISTENT" 2>/dev/null
+            echo "[$(get_timestamp)]: [WARN] prop update failed" >> "$LOG_FILE"
+            echo "<4>skia_vulkan: prop update failed" >> /dev/kmsg 2>/dev/null
+        }
     fi
 }
 
