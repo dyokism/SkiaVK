@@ -3,7 +3,7 @@
 # clean, brief installation log with real vulkan hal checks
 
 # enforce minimum sdk (android 10+, api 29)
-if [ "$API" -lt 29 ]; then
+if [ -z "$API" ] || [ "$API" -lt 29 ]; then
     abort "[!] Error: Android 10+ (API 29) is required for Skia Vulkan!"
 fi
 
@@ -18,9 +18,13 @@ else
     ui_print "- Root Manager: Unknown / Generic"
 fi
 
+# reset boot state on fresh install/upgrade
+# note: paths are explicitly hardcoded here since util.sh is not sourced in the installer environment
+rm -f "/data/adb/skia_vulkan/boot_state" "/data/adb/skia_vulkan/skia_vulkan.log"
+
 ui_print "- Installing SkiaVK..."
 
-# check for software Vulkan renderers to avoid fatal bootloops
+# check for software vulkan renderers to avoid fatal bootloops
 VULKAN_PROP=$(getprop ro.hardware.vulkan 2>/dev/null | tr -d '\r')
 case "$VULKAN_PROP" in
     pastel|swiftshader|lvp|lavapipe)
@@ -29,7 +33,7 @@ case "$VULKAN_PROP" in
         ;;
 esac
 
-# search for hardware Vulkan HAL libraries (.so files)
+# search for hardware vulkan hal libraries (.so files)
 HAS_VULKAN_LIB=0
 for libpath in \
     /vendor/lib64/hw/vulkan.*.so \

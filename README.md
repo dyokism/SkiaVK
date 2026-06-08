@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/License-MIT-708090?style=for-the-badge" alt="License">
   <img src="https://img.shields.io/badge/Android-10.0%2B-78c257?style=for-the-badge&logo=android&logoColor=white" alt="Android">
-  <img src="https://img.shields.io/badge/Version-2.2-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Version">
+  <img src="https://img.shields.io/badge/Version-2.3-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Version">
   <img src="https://img.shields.io/badge/Root-KSU%20%7C%20APatch%20%7C%20Magisk-e52b20?style=for-the-badge&logo=linux&logoColor=white" alt="Root">
   <br>
   <br>
@@ -60,6 +60,23 @@ Verified and tested on **Samsung Galaxy S23 (Snapdragon 8 Gen 2)** running Kerne
 3. **Reboot** your device to activate.
 4. Check logs at: `/data/adb/skia_vulkan/skia_vulkan.log`
 
+### RenderEngine Vulkan Backend (Opt-in)
+
+By default, SkiaVK forces the HWUI rendering pipeline to Vulkan (`skiavk`). You can optionally force the **SurfaceFlinger RenderEngine** backend to also use Vulkan. 
+
+> [!WARNING]
+> RenderEngine Vulkan backend is highly experimental on some Android versions/ROMs and might cause UI glitches or screen flickering. Use with caution.
+
+* **To Enable**: Create an empty file named `enable_renderengine` in the persistent module directory:
+  ```bash
+  su -c "touch /data/adb/skia_vulkan/enable_renderengine"
+  ```
+* **To Disable**: Delete the file and reboot:
+  ```bash
+  su -c "rm -f /data/adb/skia_vulkan/enable_renderengine"
+  ```
+  *(A device reboot is required to apply the RenderEngine changes)*
+
 ---
 
 ## File Structure
@@ -87,33 +104,54 @@ SkiaVK/
 
 ```mermaid
 flowchart TD
-    FlashZip([Start: Flash ZIP Module]) --> CheckVulkan{Vulkan Supported?}
-    CheckVulkan -- No --> Abort[Abort: Installation Terminated]
-    CheckVulkan -- Yes --> Install[Complete Installation]
-    
-    Install --> BootStart([Device Reboots & Early Boot])
-    
-    BootStart --> LoadState[Load Boot Counter / State]
-    LoadState --> BootCheck{Failed Boots >= 3?}
-    
-    BootCheck -- Yes --> TriggerSafety[Disable Module & Safe Bypass]
-    BootCheck -- No --> ApplySkia[Set debug.hwui.renderer = skiavk]
-    
-    ApplySkia --> WaitBoot[Wait for System Boot Completion]
-    WaitBoot --> BootSuccess[Boot Completed Successfully]
-    BootSuccess --> ResetState[Reset Guard Counter to 0]
-    ResetState --> Finished([Finished: Running Smoothly])
+    Flash([Flash ZIP]) --> Customize[customize.sh: API 29+ / Vulkan HW / SW reject]
+    Customize --> Reboot([Reboot])
 
-    %% Custom Styles and Colors (Ultra-Muted Slate Theme)
+    Reboot --> postFsData[post-fs-data.sh: early boot]
+    
+    postFsData --> ReadState[Read boot_state: counter + completed flag]
+    ReadState --> PrevBoot{Previous boot completed?}
+    PrevBoot -- Yes (flag=1) --> ResetCounter[Counter = 0]
+    PrevBoot -- No (flag=0) --> IncCounter[Counter += 1]
+    
+    ResetCounter --> CheckThresh{Check: counter >= 3?}
+    IncCounter --> CheckThresh
+    
+    CheckThresh -- Yes --> Disable[touch disable + reset state]
+    CheckThresh -- No --> SetProp[resetprop -n debug.hwui.renderer = skiavk]
+    
+    SetProp --> OptRE{RenderEngine file exists?}
+    OptRE -- Yes --> SetRE[resetprop -n debug.renderengine.backend = skiavk]
+    OptRE -- No --> VerifyProp[Verify property applied]
+    SetRE --> VerifyProp
+    
+    VerifyProp --> postFsDone([Done: early boot props set])
+
+    Reboot --> Service[service.sh: late boot]
+
+    Service --> Wait[Poll sys.boot_completed up to 480s]
+    Wait --> Override{debug.hwui.renderer == skiavk?}
+    Override -- No --> ReApply[re-apply skiavk override]
+    Override -- Yes --> CheckRE{RenderEngine opt-in?}
+    ReApply --> CheckRE
+    CheckRE -- Yes --> VerifyRE[Verify renderengine = skiavk]
+    CheckRE -- No --> Disarm[write_state 0 1: disarm guard]
+    VerifyRE --> Disarm
+    Disarm --> ServiceDone([Done: bootloop guard disarmed])
+
+    Reboot --> Action[User taps Action Button]
+    Action --> ResetAll[write_state 0 1 + rm disable]
+    ResetAll --> ActionDone([Done: re-enable module, reboot required])
+
     classDef startEnd fill:#1b2c24,stroke:#34d399,stroke-width:1.5px,color:#e6f4ea;
     classDef fail fill:#2c1b1b,stroke:#f87171,stroke-width:1.5px,color:#fce8e6;
     classDef decision fill:#2d2216,stroke:#fbbf24,stroke-width:1.5px,color:#fef3c7;
     classDef process fill:#1e293b,stroke:#475569,stroke-width:1px,color:#f1f5f9;
     
-    class FlashZip,Finished startEnd;
-    class TriggerSafety,Abort fail;
-    class CheckVulkan,BootCheck decision;
-    class Install,BootStart,LoadState,ApplySkia,WaitBoot,BootSuccess,ResetState process;
+    class Flash,Reboot,postFsDone,ServiceDone,ActionDone startEnd;
+    class Disable fail;
+    class PrevBoot,CheckThresh,OptRE,Override,CheckRE decision;
+    class Customize,postFsData,ReadState,ResetCounter,IncCounter,SetProp,SetRE,VerifyProp,Service,Wait,ReApply,VerifyRE,Disarm,Action,ResetAll process;
 ```
 
 ---

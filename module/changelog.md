@@ -1,5 +1,10 @@
 # SkiaVK Changelog
 
+## v2.3
+- **RenderEngine Opt-in Feature**: Added dynamic opt-in support for SurfaceFlinger RenderEngine Vulkan backend, controllable via the presence of `/data/adb/skia_vulkan/enable_renderengine`.
+- **Bootloop Guard Recovery Fix**: Resolved a critical UX trap where manual module activation in manager apps did not reset the guard, resulting in immediate re-disabling on the next boot cycle.
+- **Robustness and ShellCheck Cleanliness**: Removed all global `set -e` blocks from boot scripts, replaced unstable command-substitution strings, refactored `update_description` to prevent SC2015 warnings, and added defensive guards for the Android `$API` variable.
+
 ## v2.2
 - **Airtight Deadlock and Stability Refactor**: Enforced `resetprop -n` for late-boot injections to prevent socket deadlocks, and hardened Vulkan screening to filter out and block software Vulkan renderers (like SwiftShader/Lavapipe) preventing bootloops.
 - **POSIX & Subshell Optimizations**: Re-implemented state file parsing via a pure POSIX `while read` loop, optimized uptime parsing using native `read` rather than forking `cut`, and replaced subshell command groupings with curly brace blocks `{ ... }` to minimize early-boot process forks.

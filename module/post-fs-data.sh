@@ -2,7 +2,8 @@
 # skia_vulkan - post-fs-data.sh
 # early boot: safe property injection with bootloop guard
 
-set -e
+# shellcheck disable=SC3043
+
 
 MODDIR=${0%/*}
 
@@ -29,14 +30,14 @@ run_post_fs_data() {
     echo "[$(get_timestamp)]: [INFO] early boot: post-fs-data.sh started." >> "$LOG_FILE"
 
     # check resetprop availability
-    if ! command -v "$RESETPROP" >/dev/null 2>&1; then
+    if [ ! -x "$RESETPROP" ] && ! command -v "$RESETPROP" >/dev/null 2>&1; then
         echo "[$(get_timestamp)]: [ERROR] resetprop binary not found in PATH or standard directories." >> "$LOG_FILE"
         echo "<3>skia_vulkan: resetprop not found, aborting property injection." >> /dev/kmsg 2>/dev/null
         update_description "[ERROR!][WARNING!] NO RESETPROP AAHHHhhHH"
         return 1
     fi
 
-    # load state using a pure POSIX loop to avoid subshell and process forks
+    # load state using a pure posix loop to avoid subshell and process forks
     local BOOT_COUNTER=0
     local COMPLETED_FLAG=1 # default to 1 (completed) on fresh install or reset
     if [ -f "$STATE_FILE" ]; then
@@ -78,6 +79,9 @@ run_post_fs_data() {
         # disable module
         touch "$MODDIR/disable"
         
+        # reset state atomically so the module can be safely re-enabled later
+        write_state 0 1
+        
         # update description on failure
         update_description "Bootloop guard triggered! Please re-enable me :("
         return 0
@@ -87,13 +91,23 @@ run_post_fs_data() {
     echo "[$(get_timestamp)]: [INFO] applying debug.hwui.renderer=skiavk via $RESETPROP -n" >> "$LOG_FILE"
     "$RESETPROP" -n debug.hwui.renderer skiavk
 
+    # surfaceflinger renderengine vulkan (opt-in)
+    if [ -f "$PERSISTENT/enable_renderengine" ]; then
+        echo "[$(get_timestamp)]: [INFO] opt-in found, applying debug.renderengine.backend=skiavk" >> "$LOG_FILE"
+        "$RESETPROP" -n debug.renderengine.backend skiavk
+    fi
+
     # verify if resetprop succeeded (using resetprop instead of getprop to avoid init deadlock)
     local VERIFIED_RENDERER
     VERIFIED_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null | tr -d '\r')
     if [ "$VERIFIED_RENDERER" = "skiavk" ]; then
         echo "<6>skia_vulkan: successfully applied skiavk." >> /dev/kmsg 2>/dev/null
         echo "[$(get_timestamp)]: [SUCCESS] successfully applied skiavk (early boot)" >> "$LOG_FILE"
-        update_description "status: active (skiavk) | bootloop guard: armed (${BOOT_COUNTER}/3)"
+        if [ -f "$PERSISTENT/enable_renderengine" ]; then
+            update_description "status: active (skiavk+RE) | bootloop guard: armed (${BOOT_COUNTER}/3)"
+        else
+            update_description "status: active (skiavk) | bootloop guard: armed (${BOOT_COUNTER}/3)"
+        fi
     else
         echo "<3>skia_vulkan: failed to apply skiavk." >> /dev/kmsg 2>/dev/null
         echo "[$(get_timestamp)]: [ERROR] failed to apply skiavk (early boot)" >> "$LOG_FILE"

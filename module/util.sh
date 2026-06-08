@@ -9,6 +9,7 @@ if [ -z "$MODDIR" ]; then
 fi
 
 PERSISTENT="/data/adb/skia_vulkan"
+[ -d "$PERSISTENT" ] || { mkdir -p "$PERSISTENT" && chmod 700 "$PERSISTENT"; } 2>/dev/null
 STATE_FILE="$PERSISTENT/boot_state"
 LOG_FILE="$PERSISTENT/skia_vulkan.log"
 
@@ -42,17 +43,19 @@ fi
 # update module description in module.prop
 update_description() {
     local desc="$1"
-    if [ -f "$MODDIR/module.prop" ]; then
-        local temp_prop="$MODDIR/module.prop.tmp"
-        {
-            grep -v '^description=' "$MODDIR/module.prop"
-            echo "description=$desc"
-        } > "$temp_prop" && (mv "$temp_prop" "$MODDIR/module.prop" || { cp -f "$temp_prop" "$MODDIR/module.prop" && rm -f "$temp_prop"; }) || {
-            mkdir -p "$PERSISTENT" 2>/dev/null
-            echo "[$(get_timestamp)]: [WARN] prop update failed" >> "$LOG_FILE"
-            echo "<4>skia_vulkan: prop update failed" >> /dev/kmsg 2>/dev/null
-        }
+    [ -f "$MODDIR/module.prop" ] || return 1
+    local temp_prop="$MODDIR/module.prop.tmp"
+    
+    if grep -v '^description=' "$MODDIR/module.prop" > "$temp_prop" && echo "description=$desc" >> "$temp_prop"; then
+        if mv -f "$temp_prop" "$MODDIR/module.prop" 2>/dev/null || { cp -f "$temp_prop" "$MODDIR/module.prop" && rm -f "$temp_prop"; }; then
+            return 0
+        fi
     fi
+    
+    echo "[$(get_timestamp)]: [WARN] prop update failed" >> "$LOG_FILE"
+    echo "<4>skia_vulkan: prop update failed" >> /dev/kmsg 2>/dev/null
+    rm -f "$temp_prop" 2>/dev/null
+    return 1
 }
 
 # atomic write to the state file

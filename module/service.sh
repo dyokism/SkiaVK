@@ -2,7 +2,8 @@
 # skia_vulkan - service.sh
 # late boot: confirm successful boot, disarm guard, and apply airtight recovery
 
-set -e
+# shellcheck disable=SC3043
+
 
 MODDIR=${0%/*}
 
@@ -31,11 +32,7 @@ run_service() {
     # wait for boot completion (robust polling to avoid resetprop -w hangs)
     local timeout=480
     local elapsed=0
-    until [ "$(getprop sys.boot_completed 2>/dev/null)" = "1" ] || {
-        local val
-        val=$("$RESETPROP" sys.boot_completed 2>/dev/null)
-        [ "${val%$(printf '\r')}" = "1" ]
-    }; do
+    until [ "$(getprop sys.boot_completed 2>/dev/null)" = "1" ] || [ "$("$RESETPROP" sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do
         if [ "$elapsed" -ge "$timeout" ]; then
             echo "[$(get_timestamp)]: [WARNING] boot completion timeout reached (${elapsed}s)." >> "$LOG_FILE"
             echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg 2>/dev/null
@@ -47,7 +44,7 @@ run_service() {
     done
 
     # check resetprop availability for property injection
-    if ! command -v "$RESETPROP" >/dev/null 2>&1; then
+    if [ ! -x "$RESETPROP" ] && ! command -v "$RESETPROP" >/dev/null 2>&1; then
         echo "[$(get_timestamp)]: [ERROR] resetprop binary not found. Skipping late boot recovery." >> "$LOG_FILE"
         echo "<3>skia_vulkan: resetprop not found." >> /dev/kmsg 2>/dev/null
         write_state 0 1
@@ -64,6 +61,17 @@ run_service() {
         echo "<4>skia_vulkan: late-boot override detected, re-applied skiavk." >> /dev/kmsg 2>/dev/null
     fi
 
+    # verify and re-apply renderengine backend if opt-in file exists
+    if [ -f "$PERSISTENT/enable_renderengine" ]; then
+        local ACTIVE_RE
+        ACTIVE_RE=$("$RESETPROP" debug.renderengine.backend 2>/dev/null | tr -d '\r')
+        if [ "$ACTIVE_RE" != "skiavk" ]; then
+            echo "[$(get_timestamp)]: [WARNING] late boot: RE override detected ($ACTIVE_RE), re-applying skiavk" >> "$LOG_FILE"
+            "$RESETPROP" -n debug.renderengine.backend skiavk
+            echo "<4>skia_vulkan: late-boot RE override detected, re-applied skiavk." >> /dev/kmsg 2>/dev/null
+        fi
+    fi
+
     # disarm bootloop guard atomically
     write_state 0 1
     echo "[$(get_timestamp)]: [INFO] late boot: bootloop guard disarmed." >> "$LOG_FILE"
@@ -71,10 +79,21 @@ run_service() {
     # verify final state of renderer
     local FINAL_RENDERER
     FINAL_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null | tr -d '\r')
+    local FINAL_RE=""
+    if [ -f "$PERSISTENT/enable_renderengine" ]; then
+        FINAL_RE=$("$RESETPROP" debug.renderengine.backend 2>/dev/null | tr -d '\r')
+    fi
+
     if [ "$FINAL_RENDERER" = "skiavk" ]; then
-        update_description "status: active (skiavk) | boot: normal ;)"
-        echo "<6>skia_vulkan: boot successful, bootloop guard disarmed." >> /dev/kmsg 2>/dev/null
-        echo "[$(get_timestamp)]: [SUCCESS] successfully enforced skiavk renderer (late boot)" >> "$LOG_FILE"
+        if [ -f "$PERSISTENT/enable_renderengine" ] && [ "$FINAL_RE" = "skiavk" ]; then
+            update_description "status: active (skiavk+RE) | boot: normal ;)"
+            echo "<6>skia_vulkan: boot successful (skiavk+RE), bootloop guard disarmed." >> /dev/kmsg 2>/dev/null
+            echo "[$(get_timestamp)]: [SUCCESS] successfully enforced skiavk+RE renderer (late boot)" >> "$LOG_FILE"
+        else
+            update_description "status: active (skiavk) | boot: normal ;)"
+            echo "<6>skia_vulkan: boot successful (skiavk), bootloop guard disarmed." >> /dev/kmsg 2>/dev/null
+            echo "[$(get_timestamp)]: [SUCCESS] successfully enforced skiavk renderer (late boot)" >> "$LOG_FILE"
+        fi
     else
         update_description "status: failed to apply skiavk | but at least boot still normal ;)"
         echo "<3>skia_vulkan: boot successful, but failed to enforce skiavk renderer." >> /dev/kmsg 2>/dev/null
