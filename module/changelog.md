@@ -1,5 +1,12 @@
 # SkiaVK Changelog
 
+## v2.3.1
+- **Subshell and Process Optimizations**: Replaced `tr -d '\r'` pipeline forks in `customize.sh`, `post-fs-data.sh`, and `service.sh` with fast POSIX parameter expansion to reduce early-boot CPU overhead.
+- **Robust Recovery Compatibility**: Added `API="${API:-0}"` fallback guard in `customize.sh` to prevent shell evaluation crashes in custom recoveries (like TWRP or OrangeFox) where `$API` might be empty.
+- **Double Fork Elimination**: Refactored the late-boot polling check in `service.sh` to query `getprop` directly and verify `sys.boot_completed` without forking process groups.
+- **Installer Safety Comments**: Added safety clarifications to `update-binary` confirming that `exit` calls are safe because the script is executed as a standalone binary process.
+- **Metadata Fixes**: Added a trailing newline to `module.prop` to ensure proper parsing in BusyBox environments.
+
 ## v2.3
 - **RenderEngine Opt-in Feature**: Added dynamic opt-in support for SurfaceFlinger RenderEngine Vulkan backend, controllable via the presence of `/data/adb/skia_vulkan/enable_renderengine`.
 - **Bootloop Guard Recovery Fix**: Resolved a critical UX trap where manual module activation in manager apps did not reset the guard, resulting in immediate re-disabling on the next boot cycle.

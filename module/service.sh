@@ -32,7 +32,16 @@ run_service() {
     # wait for boot completion (robust polling to avoid resetprop -w hangs)
     local timeout=480
     local elapsed=0
-    until [ "$(getprop sys.boot_completed 2>/dev/null)" = "1" ] || [ "$("$RESETPROP" sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do
+    local boot_val
+    while true; do
+        boot_val=$(getprop sys.boot_completed 2>/dev/null)
+        boot_val="${boot_val%%[[:cntrl:]]}"
+        [ "$boot_val" = "1" ] && break
+
+        boot_val=$("$RESETPROP" sys.boot_completed 2>/dev/null)
+        boot_val="${boot_val%%[[:cntrl:]]}"
+        [ "$boot_val" = "1" ] && break
+
         if [ "$elapsed" -ge "$timeout" ]; then
             echo "[$(get_timestamp)]: [WARNING] boot completion timeout reached (${elapsed}s)." >> "$LOG_FILE"
             echo "<4>skia_vulkan: boot completion timeout reached." >> /dev/kmsg 2>/dev/null
@@ -54,7 +63,8 @@ run_service() {
     # fallback: re-apply if property is overridden
     echo "[$(get_timestamp)]: [INFO] late boot: boot completed, verifying renderer state..." >> "$LOG_FILE"
     local ACTIVE_RENDERER
-    ACTIVE_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null | tr -d '\r')
+    ACTIVE_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null)
+    ACTIVE_RENDERER="${ACTIVE_RENDERER%%[[:cntrl:]]}"
     if [ "$ACTIVE_RENDERER" != "skiavk" ]; then
         echo "[$(get_timestamp)]: [WARNING] late boot: override detected ($ACTIVE_RENDERER), re-applying skiavk" >> "$LOG_FILE"
         "$RESETPROP" -n debug.hwui.renderer skiavk
@@ -64,7 +74,8 @@ run_service() {
     # verify and re-apply renderengine backend if opt-in file exists
     if [ -f "$PERSISTENT/enable_renderengine" ]; then
         local ACTIVE_RE
-        ACTIVE_RE=$("$RESETPROP" debug.renderengine.backend 2>/dev/null | tr -d '\r')
+        ACTIVE_RE=$("$RESETPROP" debug.renderengine.backend 2>/dev/null)
+        ACTIVE_RE="${ACTIVE_RE%%[[:cntrl:]]}"
         if [ "$ACTIVE_RE" != "skiavk" ]; then
             echo "[$(get_timestamp)]: [WARNING] late boot: RE override detected ($ACTIVE_RE), re-applying skiavk" >> "$LOG_FILE"
             "$RESETPROP" -n debug.renderengine.backend skiavk
@@ -78,10 +89,12 @@ run_service() {
 
     # verify final state of renderer
     local FINAL_RENDERER
-    FINAL_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null | tr -d '\r')
+    FINAL_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null)
+    FINAL_RENDERER="${FINAL_RENDERER%%[[:cntrl:]]}"
     local FINAL_RE=""
     if [ -f "$PERSISTENT/enable_renderengine" ]; then
-        FINAL_RE=$("$RESETPROP" debug.renderengine.backend 2>/dev/null | tr -d '\r')
+        FINAL_RE=$("$RESETPROP" debug.renderengine.backend 2>/dev/null)
+        FINAL_RE="${FINAL_RE%%[[:cntrl:]]}"
     fi
 
     if [ "$FINAL_RENDERER" = "skiavk" ]; then

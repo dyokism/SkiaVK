@@ -99,7 +99,8 @@ run_post_fs_data() {
 
     # verify if resetprop succeeded (using resetprop instead of getprop to avoid init deadlock)
     local VERIFIED_RENDERER
-    VERIFIED_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null | tr -d '\r')
+    VERIFIED_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null)
+    VERIFIED_RENDERER="${VERIFIED_RENDERER%%[[:cntrl:]]}"
     if [ "$VERIFIED_RENDERER" = "skiavk" ]; then
         echo "<6>skia_vulkan: successfully applied skiavk." >> /dev/kmsg 2>/dev/null
         echo "[$(get_timestamp)]: [SUCCESS] successfully applied skiavk (early boot)" >> "$LOG_FILE"

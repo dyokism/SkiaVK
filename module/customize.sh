@@ -3,7 +3,8 @@
 # clean, brief installation log with real vulkan hal checks
 
 # enforce minimum sdk (android 10+, api 29)
-if [ -z "$API" ] || [ "$API" -lt 29 ]; then
+API="${API:-0}"
+if [ "$API" -lt 29 ]; then
     abort "[!] Error: Android 10+ (API 29) is required for Skia Vulkan!"
 fi
 
@@ -25,7 +26,8 @@ rm -f "/data/adb/skia_vulkan/boot_state" "/data/adb/skia_vulkan/skia_vulkan.log"
 ui_print "- Installing SkiaVK..."
 
 # check for software vulkan renderers to avoid fatal bootloops
-VULKAN_PROP=$(getprop ro.hardware.vulkan 2>/dev/null | tr -d '\r')
+VULKAN_PROP=$(getprop ro.hardware.vulkan 2>/dev/null)
+VULKAN_PROP="${VULKAN_PROP%%[[:cntrl:]]}"
 case "$VULKAN_PROP" in
     pastel|swiftshader|lvp|lavapipe)
         ui_print "[!] Error: Software Vulkan renderer ($VULKAN_PROP) is active!"

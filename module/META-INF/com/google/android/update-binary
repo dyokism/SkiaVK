@@ -14,13 +14,16 @@ else
     . /data/adb/magisk/util_functions.sh
     [ "$MAGISK_VER_CODE" -lt 20400 ] && {
       ui_print "Please install Magisk v20.4+!"
+      # exit is safe here since this bootstrap script is executed (not sourced) by the manager/recovery
       exit 1
     }
     install_module
+    # exit is safe here since this bootstrap script is executed (not sourced) by the manager/recovery
     exit 0
   fi
 fi
 
 ui_print "ERROR: No supported root manager detected."
 ui_print "Supported: Magisk v20.4+, KernelSU, APatch."
+# exit is safe here since this bootstrap script is executed (not sourced) by the manager/recovery
 exit 1
