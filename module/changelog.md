@@ -1,5 +1,9 @@
 # SkiaVK Changelog
 
+## v2.3.2
+- **Ruthless Refactor**: Completely refactored module scripts to remove noise comments and improve readability.
+- **Improved Logging**: Centralized logging logic within `util.sh` for cleaner code and a smaller footprint.
+- **UI Freeze Fix**: Wrapped file I/O operations into a detached subshell inside `action.sh` to prevent KernelSU/APatch UI freezes.
 ## v2.3.1
 - **Subshell and Process Optimizations**: Replaced `tr -d '\r'` pipeline forks in `customize.sh`, `post-fs-data.sh`, and `service.sh` with fast POSIX parameter expansion to reduce early-boot CPU overhead.
 - **Robust Recovery Compatibility**: Added `API="${API:-0}"` fallback guard in `customize.sh` to prevent shell evaluation crashes in custom recoveries (like TWRP or OrangeFox) where `$API` might be empty.

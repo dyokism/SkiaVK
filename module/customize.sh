@@ -1,31 +1,20 @@
 #!/system/bin/sh
-# skia_vulkan - customize.sh
-# clean, brief installation log with real vulkan hal checks
 
-# enforce minimum sdk (android 10+, api 29)
 API="${API:-0}"
 if [ "$API" -lt 29 ]; then
     abort "[!] Error: Android 10+ (API 29) is required for Skia Vulkan!"
 fi
 
-# detect active root manager
-if [ "${APATCH:-}" = "true" ]; then
-    ui_print "- Root Manager: APatch"
-elif [ "${KSU:-}" = "true" ]; then
-    ui_print "- Root Manager: KernelSU"
-elif [ -n "${MAGISK_VER:-}" ]; then
-    ui_print "- Root Manager: Magisk ($MAGISK_VER)"
-else
-    ui_print "- Root Manager: Unknown / Generic"
-fi
+if [ "${APATCH:-}" = "true" ]; then ui_print "- Root Manager: APatch"
+elif [ "${KSU:-}" = "true" ]; then ui_print "- Root Manager: KernelSU"
+elif [ -n "${MAGISK_VER:-}" ]; then ui_print "- Root Manager: Magisk ($MAGISK_VER)"
+else ui_print "- Root Manager: Unknown / Generic"; fi
 
-# reset boot state on fresh install/upgrade
-# note: paths are explicitly hardcoded here since util.sh is not sourced in the installer environment
+# Reset persistent state on upgrade to prevent outdated bootloop guard triggers.
 rm -f "/data/adb/skia_vulkan/boot_state" "/data/adb/skia_vulkan/skia_vulkan.log"
 
 ui_print "- Installing SkiaVK..."
 
-# check for software vulkan renderers to avoid fatal bootloops
 VULKAN_PROP=$(getprop ro.hardware.vulkan 2>/dev/null)
 VULKAN_PROP="${VULKAN_PROP%%[[:cntrl:]]}"
 case "$VULKAN_PROP" in
@@ -35,7 +24,6 @@ case "$VULKAN_PROP" in
         ;;
 esac
 
-# search for hardware vulkan hal libraries (.so files)
 HAS_VULKAN_LIB=0
 for libpath in \
     /vendor/lib64/hw/vulkan.*.so \
@@ -47,7 +35,7 @@ for libpath in \
     /system/lib64/hw/vulkan.*.so \
     /system/lib/hw/vulkan.*.so; do
     if [ -f "$libpath" ]; then
-        # exclude software renderers (swiftshader, pastel, lavapipe) to avoid false-positives
+        # Exclude software renderers from HAL detection to prevent false-positive driver matches on emulated environments.
         case "$libpath" in
             *pastel*|*swiftshader*|*lvp*|*lavapipe*) continue ;;
         esac

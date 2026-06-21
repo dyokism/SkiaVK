@@ -1,19 +1,14 @@
 #!/system/bin/sh
 # shellcheck disable=SC3043,SC2034
-# skia_vulkan - util.sh
-# shared variables and utility functions for skiavk module
 
-# ensure moddir is set correctly
-if [ -z "$MODDIR" ]; then
-    MODDIR=${0%/*}
-fi
-
+MODDIR=${0%/*}
 PERSISTENT="/data/adb/skia_vulkan"
-[ -d "$PERSISTENT" ] || { mkdir -p "$PERSISTENT" && chmod 700 "$PERSISTENT"; } 2>/dev/null
 STATE_FILE="$PERSISTENT/boot_state"
 LOG_FILE="$PERSISTENT/skia_vulkan.log"
 
-# helper to retrieve monotonic boot uptime or date fallback
+[ -d "$PERSISTENT" ] || { mkdir -p "$PERSISTENT" && chmod 700 "$PERSISTENT"; } 2>/dev/null
+
+# Monotonic uptime is preferred to date since late-boot timezone shifts can break sequential log analysis.
 get_timestamp() {
     if [ -f /proc/uptime ]; then
         local uptime
@@ -24,7 +19,14 @@ get_timestamp() {
     fi
 }
 
-# resolve resetprop path for kernelsu/apatch early boot
+log_info() { echo "[$(get_timestamp)]: [INFO] $1" >> "$LOG_FILE"; }
+log_warn() { echo "[$(get_timestamp)]: [WARN] $1" >> "$LOG_FILE"; }
+log_err() { 
+    echo "[$(get_timestamp)]: [ERROR] $1" >> "$LOG_FILE"
+    echo "<3>skia_vulkan: $1" >> /dev/kmsg 2>/dev/null
+}
+
+# Resolve custom resetprop binaries for KernelSU/APatch environments before falling back to system.
 RESETPROP="resetprop"
 if ! command -v resetprop >/dev/null 2>&1; then
     for path in \
@@ -40,25 +42,24 @@ if ! command -v resetprop >/dev/null 2>&1; then
     done
 fi
 
-# update module description in module.prop
+# Atomic description updates prevent corrupted module.prop files during abrupt kernel panics.
 update_description() {
     local desc="$1"
     [ -f "$MODDIR/module.prop" ] || return 1
-    local temp_prop="$MODDIR/module.prop.tmp"
+    local tmp="$MODDIR/module.prop.tmp"
     
-    if grep -v '^description=' "$MODDIR/module.prop" > "$temp_prop" && echo "description=$desc" >> "$temp_prop"; then
-        if mv -f "$temp_prop" "$MODDIR/module.prop" 2>/dev/null || { cp -f "$temp_prop" "$MODDIR/module.prop" && rm -f "$temp_prop"; }; then
+    if grep -v '^description=' "$MODDIR/module.prop" > "$tmp" && echo "description=$desc" >> "$tmp"; then
+        if mv -f "$tmp" "$MODDIR/module.prop" 2>/dev/null || { cp -f "$tmp" "$MODDIR/module.prop" && rm -f "$tmp"; }; then
             return 0
         fi
     fi
     
-    echo "[$(get_timestamp)]: [WARN] prop update failed" >> "$LOG_FILE"
-    echo "<4>skia_vulkan: prop update failed" >> /dev/kmsg 2>/dev/null
-    rm -f "$temp_prop" 2>/dev/null
+    log_err "prop update failed"
+    rm -f "$tmp" 2>/dev/null
     return 1
 }
 
-# atomic write to the state file
+# POSIX atomic rename guarantees bootloop state isn't partially written if the device hard-crashes.
 write_state() {
     local boot_counter="$1"
     local completed_flag="$2"
