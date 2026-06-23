@@ -8,7 +8,6 @@ LOG_FILE="$PERSISTENT/skia_vulkan.log"
 
 [ -d "$PERSISTENT" ] || { mkdir -p "$PERSISTENT" && chmod 700 "$PERSISTENT"; } 2>/dev/null
 
-# Monotonic uptime is preferred to date since late-boot timezone shifts can break sequential log analysis.
 get_timestamp() {
     if [ -f /proc/uptime ]; then
         local uptime
@@ -26,7 +25,6 @@ log_err() {
     echo "<3>skia_vulkan: $1" >> /dev/kmsg 2>/dev/null
 }
 
-# Resolve custom resetprop binaries for KernelSU/APatch environments before falling back to system.
 RESETPROP="resetprop"
 if ! command -v resetprop >/dev/null 2>&1; then
     for path in \
@@ -42,7 +40,7 @@ if ! command -v resetprop >/dev/null 2>&1; then
     done
 fi
 
-# Atomic description updates prevent corrupted module.prop files during abrupt kernel panics.
+# Description updates prevent corrupted module.prop files during abrupt kernel panics.
 update_description() {
     local desc="$1"
     [ -f "$MODDIR/module.prop" ] || return 1
@@ -59,7 +57,7 @@ update_description() {
     return 1
 }
 
-# POSIX atomic rename guarantees bootloop state isn't partially written if the device hard-crashes.
+# POSIX rename guarantees bootloop state isn't partially written if the device hard-crashes.
 write_state() {
     local boot_counter="$1"
     local completed_flag="$2"

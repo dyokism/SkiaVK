@@ -12,7 +12,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# We wrap execution in a function because sourcing files in some root managers can cause premature exits.
+# Wrap execution in a function because sourcing files in some root managers can cause premature exits.
 run_post_fs_data() {
     mkdir -p "$PERSISTENT" 2>/dev/null
     chmod 700 "$PERSISTENT" 2>/dev/null
@@ -29,7 +29,7 @@ run_post_fs_data() {
     local BOOT_COUNTER=0
     local COMPLETED_FLAG=1
     if [ -f "$STATE_FILE" ]; then
-        # Pure POSIX loops avoid expensive subshell forks during early init phase where timing is critical.
+        # Avoid subshell forks during early init phase where timing is critical.
         while IFS= read -r line; do
             case "$line" in
                 BOOT_COUNTER=*) BOOT_COUNTER="${line#*=}" ;;
@@ -68,7 +68,7 @@ run_post_fs_data() {
         "$RESETPROP" -n debug.renderengine.backend skiavk
     fi
 
-    # Verify state against resetprop rather than getprop since early init may deadlock property_service sockets.
+    # Verify state against resetprop rather than getprop
     local VERIFIED_RENDERER
     VERIFIED_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null)
     VERIFIED_RENDERER="${VERIFIED_RENDERER%%[[:cntrl:]]}"

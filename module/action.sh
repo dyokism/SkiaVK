@@ -4,7 +4,6 @@
 MODDIR=${0%/*}
 . "$MODDIR/util.sh"
 
-# Detach heavy I/O operations to prevent root manager UI freezes when tapping the action button.
 (
     write_state 0 1
     log_info "action.sh: counter reset by user."
