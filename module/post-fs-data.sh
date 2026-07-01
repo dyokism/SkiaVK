@@ -68,7 +68,7 @@ run_post_fs_data() {
         "$RESETPROP" -n debug.renderengine.backend skiavk
     fi
 
-    # Verify state against resetprop rather than getprop
+    # getprop reads from property_service cache which can be stale during early boot.
     local VERIFIED_RENDERER
     VERIFIED_RENDERER=$("$RESETPROP" debug.hwui.renderer 2>/dev/null)
     VERIFIED_RENDERER="${VERIFIED_RENDERER%%[[:cntrl:]]}"

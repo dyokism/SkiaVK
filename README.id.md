@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Lisensi-MIT-708090?style=for-the-badge" alt="Lisensi">
   <img src="https://img.shields.io/badge/Android-10.0%2B-78c257?style=for-the-badge&logo=android&logoColor=white" alt="Android">
-  <img src="https://img.shields.io/badge/Versi-2.3.2-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Versi">
+  <img src="https://img.shields.io/badge/Versi-2.3.3-0078d7?style=for-the-badge&logo=github&logoColor=white" alt="Versi">
   <img src="https://img.shields.io/badge/Root-KSU%20%7C%20APatch%20%7C%20Magisk-e52b20?style=for-the-badge&logo=linux&logoColor=white" alt="Root">
   <br>
   <br>

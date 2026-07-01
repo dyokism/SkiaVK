@@ -1,8 +1,5 @@
-# SkiaVK Changelog
+## 2.3.3
+- Fixed a bug where the shared utility could overwrite the module path in some cases.
+- Action button now correctly shows "skiavk+RE" when RenderEngine mode is active.
 
-## v2.3.2
-- **Ruthless Refactor**: Completely refactored module scripts to remove noise comments and improve readability.
-- **Improved Logging**: Centralized logging logic within `util.sh` for cleaner code and a smaller footprint.
-- **UI Freeze Fix**: Wrapped file I/O operations into a detached subshell inside `action.sh` to prevent KernelSU/APatch UI freezes.
-
-hi lol
+Please submit any issues or feature requests to the [GitHub repository](https://github.com/dyokism/SkiaVK), thanks!

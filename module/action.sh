@@ -8,7 +8,11 @@ MODDIR=${0%/*}
     write_state 0 1
     log_info "action.sh: counter reset by user."
     rm -f "$MODDIR/disable"
-    update_description "status: active (skiavk) | bootloop guard: u reset it earlier bruh"
+    if [ -f "$PERSISTENT/enable_renderengine" ]; then
+        update_description "status: active (skiavk+RE) | bootloop guard: u reset it earlier bruh"
+    else
+        update_description "status: active (skiavk) | bootloop guard: u reset it earlier bruh"
+    fi
 ) >/dev/null 2>&1 &
 
 if command -v ui_print >/dev/null 2>&1; then

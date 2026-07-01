@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # shellcheck disable=SC3043,SC2034
 
-MODDIR=${0%/*}
+MODDIR="${MODDIR:-${0%/*}}"
 PERSISTENT="/data/adb/skia_vulkan"
 STATE_FILE="$PERSISTENT/boot_state"
 LOG_FILE="$PERSISTENT/skia_vulkan.log"
@@ -40,7 +40,7 @@ if ! command -v resetprop >/dev/null 2>&1; then
     done
 fi
 
-# Description updates prevent corrupted module.prop files during abrupt kernel panics.
+# Atomic write-then-rename to prevent partial module.prop on hard crashes.
 update_description() {
     local desc="$1"
     [ -f "$MODDIR/module.prop" ] || return 1
